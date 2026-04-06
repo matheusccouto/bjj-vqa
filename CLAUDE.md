@@ -1,4 +1,3 @@
----
 # BJJ-VQA
 
 VQA benchmark for jiu-jitsu. Evaluates VLMs BJJ knowledge.
@@ -38,4 +37,3 @@ inline validation script in validate.yml manually.
 
 - IDs: 5 digits zero-padded (00001, 00002...)
 - Images: JPEG in data/images/, committed to git
----
