@@ -1,0 +1,19 @@
+name: Publish to Hugging Face Hub
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked
+      - run: uv run bjj-vqa publish --repo couto/bjj-vqa --tag ${{ github.event.release.tag_name }}
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}

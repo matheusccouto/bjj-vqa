@@ -1,0 +1,18 @@
+[
+  {
+    "id": "00001",
+    "image": "images/00001.jpg",
+    "question": "The bottom athlete has a triangle locked. Look at the grips the bottom athlete is using underneath his legs. Why has he abandoned pulling the head to use this specific grip instead?",
+    "choices": [
+      "Elevating the hips backward allows him to execute a sweep.",
+      "Pinning the lower body stops the top athlete from jumping over the guard.",
+      "Transitioning into a leg lock becomes possible from this specific angle.",
+      "Compressing the opponent prevents them from posturing while tightening the squeeze."
+    ],
+    "answer": "D",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "submissions",
+    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=225s"
+  }
+]
