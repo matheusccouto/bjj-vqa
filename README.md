@@ -1,3 +1,21 @@
+---
+pretty_name: BJJ-VQA
+license: cc-by-sa-4.0
+tags:
+  - vision-language-models
+  - visual-question-answering
+  - benchmark
+  - inspect-ai
+  - bjj
+  - brazilian-jiu-jitsu
+task_categories:
+  - visual-question-answering
+language:
+  - en
+size_categories:
+  - n<1K
+---
+
 # BJJ-VQA
 
 A Visual Question Answering benchmark that tests whether Vision-Language
@@ -33,7 +51,7 @@ Images live in `data/images/` and are committed to this repo. The packaged
 dataset (images + metadata) is published to Hugging Face Hub on each GitHub
 release.
 
-→ [huggingface.co/datasets/matheusccouto/bjj-vqa](https://huggingface.co/datasets/matheusccouto/bjj-vqa)
+→ [huggingface.co/datasets/couto/bjj-vqa](https://huggingface.co/datasets/couto/bjj-vqa)
 
 ## Contributing
 
@@ -189,7 +207,7 @@ When using this dataset, please attribute:
   author  = {Matheus Couto},
   title   = {BJJ-VQA: Brazilian Jiu-Jitsu Visual Question Answering Benchmark},
   year    = {2026},
-  url     = {https://huggingface.co/datasets/matheusccouto/bjj-vqa},
+  url     = {https://huggingface.co/datasets/couto/bjj-vqa},
   license = {CC BY-SA 4.0}
 }
 ```
