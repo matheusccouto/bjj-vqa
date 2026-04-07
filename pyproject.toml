@@ -44,22 +44,11 @@ line-length = 88
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = [
-    "D",      # pydocstyle - not required for this project
-    "ANN",    # flake8-annotations - type hints not enforced
-    "COM",    # flake8-commas - handled by formatter
-    "EM",     # flake8-errmsg - not required
-    "TRY",    # tryceratops - not required
-    "TD",     # flake8-todos - not required
-    "FIX",    # flake8-fixme - not required
-    "S101",   # assert-used - pytest uses asserts
-    "PLR2004",# magic-value-comparison - allowed in tests
-]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
+    "ANN",    # type annotations not required in tests
     "S101",   # assert-used
-    "PLR2004",# magic-value-comparison
 ]
 "src/bjj_vqa/cli.py" = [
     "T201",   # print-used - CLI uses print for output

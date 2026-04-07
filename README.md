@@ -23,9 +23,7 @@ configs:
 
 # BJJ-VQA
 
-A Visual Question Answering benchmark that tests whether Vision-Language
-Models can reason about Brazilian Jiu-Jitsu mechanics — not just recognize
-technique names.
+A Visual Question Answering benchmark that tests whether Vision-Language Models can reason about Brazilian Jiu-Jitsu mechanics — not just recognize technique names.
 
 Each question presents a still frame from a CC-licensed instructional video
 and asks *why* a specific visible detail matters. The correct answer cannot
@@ -52,9 +50,7 @@ works. Results go in `.eval_results/` in the model's repo.
 
 1 question · gi only · single video source · intermediate
 
-Images live in `data/images/` and are committed to this repo. The packaged
-dataset (images + metadata) is published to Hugging Face Hub on each GitHub
-release.
+Images live in `data/images/` and are committed to this repo. The packaged dataset (images + metadata) is published to Hugging Face Hub on each GitHub release.
 
 → [huggingface.co/datasets/couto/bjj-vqa](https://huggingface.co/datasets/couto/bjj-vqa)
 
@@ -112,9 +108,7 @@ Contributions are pairs of (image + question) submitted as a single PR.
 }
 ```
 
-Allowed values: `experience_level` → `beginner /
-intermediate / advanced` · `category` → `gi / no_gi` · `subject` → `guard / passing /
-submissions / controls / escapes / takedowns`
+Allowed values: `experience_level` → `beginner / intermediate / advanced` · `category` → `gi / no_gi` · `subject` → `guard / passing / submissions / controls / escapes / takedowns`
 
 **Attribution** — add a line to the Sources section below for any new video.
 
@@ -222,8 +216,7 @@ All frames extracted from Creative Commons licensed videos.
 | [Armlock X Triangulo Partindo da Guarda Fechada](https://youtube.com/watch?v=SzL_uObk8fk) | Cobrinha BJJ & Fitness | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00001 |
 
 When using this dataset, please attribute:
-> Frames from "Armlock X Triangulo Partindo da Guarda Fechada" by Cobrinha
-> Brazilian Jiu-Jitsu & Fitness, CC BY 4.0.
+> Frames from "Armlock X Triangulo Partindo da Guarda Fechada" by Cobrinha Brazilian Jiu-Jitsu & Fitness, CC BY 4.0.
 
 ## Citation
 

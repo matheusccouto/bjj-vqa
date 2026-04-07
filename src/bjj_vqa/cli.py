@@ -13,6 +13,7 @@ from bjj_vqa.schema import DATA_DIR, SampleRecord
 
 
 def main() -> None:
+    """CLI entry point for BJJ-VQA dataset operations."""
     parser = argparse.ArgumentParser(description="BJJ-VQA CLI")
     subparsers = parser.add_subparsers(required=True)
 
@@ -88,7 +89,7 @@ def publish(repo: str, tag: str) -> None:
             "category": [r.category for r in records],
             "subject": [r.subject for r in records],
             "source": [r.source for r in records],
-        }
+        },
     )
 
     # Create DatasetDict with 'test' split for benchmark compatibility

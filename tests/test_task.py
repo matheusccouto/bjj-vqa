@@ -1,3 +1,5 @@
+"""Tests for BJJ-VQA task module."""
+
 import pytest
 
 from bjj_vqa.task import record_to_sample

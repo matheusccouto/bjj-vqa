@@ -1,3 +1,5 @@
+"""BJJ-VQA inspect-ai task definition."""
+
 from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, json_dataset
 from inspect_ai.model import ChatMessageUser, ContentImage, ContentText

@@ -24,14 +24,11 @@ uv run inspect eval src/bjj_vqa/task.py --model anthropic/claude-opus-4-5
 
 ## Data structure
 
-Each entry in samples.json has: id, image (relative path), question,
-choices (array of 4), answer (A/B/C/D), experience_level, category (gi/no_gi),
-subject, source (YouTube URL with timestamp).
+Each entry in samples.json has: id, image (relative path), question, choices (array of 4), answer (A/B/C/D), experience_level, category (gi/no_gi), subject, source (YouTube URL with timestamp).
 
 ## Validation
 
-CI automatically validates the schema. To validate locally, run the
-inline validation script in validate.yml manually.
+CI automatically validates the schema. To validate locally, run the inline validation script in validate.yml manually.
 
 ## Conventions
 
