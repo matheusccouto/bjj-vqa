@@ -135,3 +135,6 @@ temp.mp4
 # OS files
 .DS_Store
 Thumbs.db
+
+# Claude
+*.local.md
