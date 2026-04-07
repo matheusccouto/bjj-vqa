@@ -2,9 +2,10 @@
 
 import argparse
 import json
+import os
 import sys
 
-from datasets import Dataset
+from datasets import Dataset, DatasetDict
 from PIL import Image
 from pydantic import ValidationError
 
@@ -90,16 +91,17 @@ def publish(repo: str, tag: str) -> None:
         }
     )
 
-    dataset.push_to_hub(
-        repo_id=repo, token=token, commit_message=f"Release {tag}", tags=[tag]
-    )
+    # Create DatasetDict with 'test' split for benchmark compatibility
+    dataset_dict = DatasetDict({"test": dataset})
+
+    dataset_dict.push_to_hub(repo_id=repo, token=token, commit_message=f"Release {tag}")
 
     print(f"Published to {repo} with tag {tag}")
     print(f"https://huggingface.co/datasets/{repo}")
 
 
 def _env_or_exit(name: str) -> str:
-    val = sys.environ.get(name)
+    val = os.environ.get(name)
     if not val:
         print(f"ERROR: {name} not set")
         sys.exit(1)

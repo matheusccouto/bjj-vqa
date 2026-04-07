@@ -14,6 +14,11 @@ language:
   - en
 size_categories:
   - n<1K
+configs:
+  - config_name: default
+    data_files:
+      - split: test
+        path: data/test-*
 ---
 
 # BJJ-VQA
@@ -52,6 +57,26 @@ dataset (images + metadata) is published to Hugging Face Hub on each GitHub
 release.
 
 → [huggingface.co/datasets/couto/bjj-vqa](https://huggingface.co/datasets/couto/bjj-vqa)
+
+### HuggingFace Community Eval
+
+This benchmark is registered as a [HuggingFace Community Eval](https://huggingface.co/blog/community-evals). To evaluate a model:
+
+```bash
+# From the HuggingFace dataset
+inspect eval couto/bjj-vqa --model <model_id>
+
+# Or from this repository
+inspect eval src/bjj_vqa/task.py --model <model_id>
+```
+
+**eval.yaml configuration:**
+- `evaluation_framework`: `inspect-ai`
+- `field_spec.input`: `question`
+- `field_spec.input_image`: `image`
+- `field_spec.target`: `answer`
+- `field_spec.choices`: `choices`
+- `split`: `test`
 
 ## Contributing
 

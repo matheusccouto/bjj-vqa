@@ -1,0 +1,28 @@
+name: Eval Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked --dev --extra google
+      - name: Run minimal eval
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          uv run inspect eval src/bjj_vqa/task.py \
+            --model google/gemini-3-flash-preview \
+            --limit 1 \
+            --max-tokens 10
