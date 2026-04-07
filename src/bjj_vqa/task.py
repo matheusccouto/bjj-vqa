@@ -18,7 +18,7 @@ def record_to_sample(record: dict) -> Sample:
 
     return Sample(
         id=record["id"],
-        input=[ChatMessageUser(content=input_content)],
+        input=[ChatMessageUser(content=input_content)],  # ty: ignore[invalid-argument-type]
         choices=record["choices"],
         target=record["answer"],
         metadata={
@@ -35,8 +35,8 @@ def bjj_vqa() -> Task:
     """BJJ-VQA benchmark task for evaluating vision-language models."""
     dataset = json_dataset(
         json_file=str(DATA_DIR / "samples.json"),
-        # RecordToSample required: FieldSpec can't combine image+question into multimodal
-        # ChatMessageUser or resolve image paths relative to DATA_DIR
+        # RecordToSample required: FieldSpec can't combine image+question
+        # into multimodal ChatMessageUser or resolve image paths
         sample_fields=record_to_sample,
     )
 

@@ -18,6 +18,9 @@ google = [
     "google-genai>=1.0.0",
 ]
 
+[project.scripts]
+bjj-vqa = "bjj_vqa.cli:main"
+
 [dependency-groups]
 dev = [
     {include-group = "test"},
@@ -28,11 +31,43 @@ test = [
 ]
 lint = [
     "ruff>=0.9.0",
+    "ty>=0.0.1",
 ]
 
-[project.scripts]
-bjj-vqa = "bjj_vqa.cli:main"
-
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.11.3,<0.12"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D",      # pydocstyle - not required for this project
+    "ANN",    # flake8-annotations - type hints not enforced
+    "COM",    # flake8-commas - handled by formatter
+    "EM",     # flake8-errmsg - not required
+    "TRY",    # tryceratops - not required
+    "TD",     # flake8-todos - not required
+    "FIX",    # flake8-fixme - not required
+    "S101",   # assert-used - pytest uses asserts
+    "PLR2004",# magic-value-comparison - allowed in tests
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",   # assert-used
+    "PLR2004",# magic-value-comparison
+]
+"src/bjj_vqa/cli.py" = [
+    "T201",   # print-used - CLI uses print for output
+]
+
+[tool.ty.environment]
+python = ".venv"
+root = ["./src"]
+
+[tool.ty.src]
+include = ["src", "tests"]
