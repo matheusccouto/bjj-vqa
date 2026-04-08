@@ -23,11 +23,9 @@ configs:
 
 # BJJ-VQA
 
-A Visual Question Answering benchmark that tests whether Vision-Language Models can reason about Brazilian Jiu-Jitsu mechanics — not just recognize technique names.
+A Visual Question Answering benchmark that tests whether Vision-Language Models can reason about Brazilian Jiu-Jitsu mechanics, not just recognize technique names.
 
-Each question presents a still frame from a CC-licensed instructional video
-and asks *why* a specific visible detail matters. The correct answer cannot
-be identified from text alone.
+Each question presents a still frame from a CC-licensed instructional video and asks *why* a specific visible detail matters. The correct answer cannot be identified from text alone.
 
 ## Setup
 
@@ -44,10 +42,7 @@ uv run inspect view
 ```
 
 Any model supported by [inspect-ai](https://inspect.aisi.org.uk/providers.html)
-works. Evaluation results are stored in `.eval_results/` in the **model's**
-repository (not this dataset repo). See the
-[HuggingFace eval-results docs](https://huggingface.co/docs/hub/eval-results)
-for how to submit results.
+works. Evaluation results are stored in `.eval_results/` in the **model's** repository (not this dataset repo). See the [HuggingFace eval-results docs](https://huggingface.co/docs/hub/eval-results) for how to submit results.
 
 ## Dataset
 
@@ -87,13 +82,11 @@ Contributions are pairs of (image + question) submitted as a single PR.
 - Commit the frame directly
 
 **Question requirements**
-- Question text must establish full situational context (position, what both
-  athletes are doing) so no prior frame is needed
-- Ask *why* a visible detail matters — never ask *what* technique is shown
+- Question text must establish full situational context (position, what both athletes are doing) so no prior frame is needed
+- Ask *why* a visible detail matters, never ask *what* technique is shown
 - All 4 choices must be plausible to someone who trains
 - Correct answer must not be identifiable from text alone
-- Answers distributed across A/B/C/D (no letter more than twice, no repeats
-  in consecutive questions)
+- Answers distributed across A/B/C/D (no letter more than twice, no repeats in consecutive questions)
 
 **JSON fields** (add to `data/samples.json`):
 
@@ -113,10 +106,9 @@ Contributions are pairs of (image + question) submitted as a single PR.
 
 Allowed values: `experience_level` → `beginner / intermediate / advanced` · `category` → `gi / no_gi` · `subject` → `guard / passing / submissions / controls / escapes / takedowns`
 
-**Attribution** — add a line to the Sources section below for any new video.
+**Attribution** - add a line to the Sources section below for any new video.
 
-**Generating candidates** — paste the prompt below into Gemini with a CC
-video attached. Output requires your review before submission.
+**Generating candidates** - paste the prompt below into Gemini with a CC video attached. Output requires your review before submission.
 
 <details>
 <summary>Question generation prompt (Gemini)</summary>
@@ -194,7 +186,7 @@ For each question, the four options must collectively include:
 - One option applying a real BJJ principle to the wrong situation
 - One option partially correct but wrong about the mechanism
 - One option describing the opposite of what is happening
-- The correct answer — not the longest or most complete-sounding option
+- The correct answer - not the longest or most complete-sounding option
 
 ---
 
