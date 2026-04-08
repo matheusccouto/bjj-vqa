@@ -44,7 +44,10 @@ uv run inspect view
 ```
 
 Any model supported by [inspect-ai](https://inspect.aisi.org.uk/providers.html)
-works. Results go in `.eval_results/` in the model's repo.
+works. Evaluation results are stored in `.eval_results/` in the **model's**
+repository (not this dataset repo). See the
+[HuggingFace eval-results docs](https://huggingface.co/docs/hub/eval-results)
+for how to submit results.
 
 ## Dataset
 
