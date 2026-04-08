@@ -1,6 +1,8 @@
 """CLI for BJJ-VQA dataset operations."""
 
 import argparse
+import base64
+import io
 import json
 import os
 import sys
@@ -10,6 +12,14 @@ from PIL import Image
 from pydantic import ValidationError
 
 from bjj_vqa.schema import DATA_DIR, SampleRecord
+
+
+def _image_to_data_uri(img: Image.Image) -> str:
+    """Convert a PIL Image to a base64 data URI."""
+    buffer = io.BytesIO()
+    img.save(buffer, format="JPEG")
+    img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return f"data:image/jpeg;base64,{img_base64}"
 
 
 def main() -> None:
@@ -76,12 +86,14 @@ def publish(repo: str, tag: str) -> None:
 
     records = [SampleRecord.model_validate(r) for r in data]
 
-    images = [Image.open(DATA_DIR / r.image) for r in records]
+    # Convert images to base64 data URIs for inspect-ai compatibility
+    # (inspect-ai uses .to_list() which returns raw Arrow format for Image columns)
+    images = [_image_to_data_uri(Image.open(DATA_DIR / r.image)) for r in records]
 
     dataset = Dataset.from_dict(
         {
             "id": [r.id for r in records],
-            "image": images,
+            "image": images,  # base64 data URIs as strings
             "question": [r.question for r in records],
             "choices": [r.choices for r in records],
             "answer": [r.answer for r in records],
