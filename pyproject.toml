@@ -13,11 +13,6 @@ dependencies = [
     "pydantic>=2.0.0",
 ]
 
-[project.optional-dependencies]
-google = [
-    "google-genai>=1.0.0",
-]
-
 [project.scripts]
 bjj-vqa = "bjj_vqa.cli:main"
 

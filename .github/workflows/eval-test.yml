@@ -17,12 +17,12 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - run: uv sync --locked --extra google
+      - run: uv sync --locked
       - name: Run minimal eval
         env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           uv run inspect eval src/bjj_vqa/task.py \
-            --model google/gemma-4-31b-it \
+            --model openrouter/google/gemma-4-31b-it \
             --limit 1 \
             --max-tokens 10

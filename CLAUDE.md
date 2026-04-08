@@ -19,7 +19,7 @@ When working with Hugging Face, fetch docs from: https://huggingface.co/docs/hub
 uv sync                          # install dependencies
 uv run pytest -v                 # run tests
 uv run ruff check . && uv run ruff format --check .  # lint
-uv run inspect eval src/bjj_vqa/task.py --model anthropic/claude-opus-4-5
+uv run inspect eval src/bjj_vqa/task.py --model openrouter/google/gemma-4-31b-it
 ```
 
 ## Data structure

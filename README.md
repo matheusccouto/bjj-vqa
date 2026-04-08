@@ -36,8 +36,8 @@ uv sync
 ## Run an evaluation
 
 ```bash
-export ANTHROPIC_AUTH_TOKEN=your-token
-uv run inspect eval src/bjj_vqa/task.py --model anthropic/claude-opus-4-5
+export OPENROUTER_API_KEY=your-key
+uv run inspect eval src/bjj_vqa/task.py --model openrouter/anthropic/claude-opus-4-5
 uv run inspect view
 ```
 
