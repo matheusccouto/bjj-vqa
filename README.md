@@ -108,96 +108,160 @@ Allowed values: `experience_level` → `beginner / intermediate / advanced` · `
 
 **Attribution** - add a line to the Sources section below for any new video.
 
-**Generating candidates** - paste the prompt below into Gemini with a CC video attached. Output requires your review before submission.
+**Generating candidates**
+
+1. Find a CC BY or CC BY-SA licensed BJJ instructional video on YouTube
+2. Open Gemini and paste the prompt below
+3. Attach the video to Gemini and run the prompt
+4. Review the output — verify timestamps, check validation passes, spot-check options
+5. Paste the output to Claude Code with: "Implement these questions into `data/samples.json`"
+6. Manually extract frames at the given timestamps and save to `data/images/`
 
 <details>
-<summary>Question generation prompt (Gemini)</summary>
+<summary>Question generation prompt</summary>
 
-```
-You are a BJJ black belt with competition experience in gi and no-gi.
+```markdown
+<role>
+You are an expert Brazilian Jiu-Jitsu black belt building a VQA benchmark dataset
+by watching instructional videos.
+</role>
 
-Watch the attached video. Generate exactly 5 questions. Be concise.
+<task>
+Watch the attached video in full. Extract the concepts the instructor teaches.
+Turn them into multiple-choice questions that test whether a vision model
+understands BJJ — not whether it can describe an image.
 
----
+Reason through each step internally before writing output.
+</task>
 
-## Context
+<validity_rule>
+A question is valid only when BOTH inputs are required to answer it:
+- knowing the concept the instructor taught
+- reading the image to determine which option applies it correctly
 
-These questions are for BJJ-VQA, a Visual Question Answering benchmark that
-tests whether AI vision models can reason about what is happening on the mat,
-not just recognize techniques by name.
+If the image alone is enough → invalid.
+If BJJ knowledge alone is enough → invalid.
+</validity_rule>
 
-A VQA benchmark presents a model with an image and a multiple-choice
-question. The model must choose the correct answer by reasoning about what
-it sees. This creates a specific failure mode called a language shortcut: if
-a model can identify the correct answer by reading the question and options
-alone, without processing the image, the question is invalid.
+<question_format>
+Write each question as a cloze of the instructor's own words. Use both stem
+formats at least once across your K questions.
 
-A question is free of language shortcuts when:
-- The correct answer cannot be guessed from BJJ knowledge alone
-- The correct answer is not identifiable as the longest, most complete, or
-  most technically worded option
-- All 4 options are plausible to someone who trains but has not seen this frame
-- The image is the deciding factor
+COMPLETION — take a statement the instructor made, end the stem naturally,
+and make the options the possible endings. Use when the instructor stated a
+principle, preference, or sequence step directly.
 
----
+CLASSIFICATION — present a technique or detail and ask what role or priority
+it has. Use when the instructor categorized something (first resort, last
+resort, only when X, never when Y, etc.).
 
-## Question Construction
+Options must read like short, confident coaching cues. Keep all four similar
+in length. No hedges. No "but", "although", or "however" inside options.
 
-Every question must be self-contained. Write the question so it establishes
-full situational context so no prior frame is needed. The image reveals only
-the specific visible detail being asked about.
+<example type="completion">
+Q: When the forearm cuts across the front of the neck, the finish is mostly
+   done by
+A) rowing your elbow
+B) squeezing your hands
+C) driving your shoulder into their jaw
+D) dropping your hip toward the mat
+</example>
 
-Ask WHY a visible detail matters mechanically. Never ask WHAT technique is
-shown. Plain mat language only, no anatomy terms.
+<example type="classification">
+Q: Using your leg to bend their leg so you strip the grip is
+A) the first thing to try
+B) something to use when your arms alone cannot break it
+C) a setup for the knee cut, not a grip strip
+D) effective only after you have secured the underhook
+</example>
+</question_format>
 
-If SHORTCUT_RISK is MEDIUM or HIGH, rewrite before submitting.
+<option_types>
+Each question needs exactly one of each:
+- CORRECT — the outcome the instructor taught, as a direct coaching cue
+- WRONG-CONTEXT — a real BJJ principle, but from a different position or goal
+- WRONG-MECHANISM — right outcome named, wrong physical reason given
+- WRONG-DIRECTION — correct mechanism stated, but the effect is reversed
 
----
+The correct answer must not be the longest option.
+Distribute answers evenly across A/B/C/D — no letter repeats consecutively,
+no letter appears more than ceil(K/2) times across all questions.
+</option_types>
 
-## Answer Distribution
+<phases>
 
-Spread correct answers across A, B, C, D. No letter appears more than twice.
-No letter repeats in two consecutive questions. Vary grammatical structure
-across options.
+<phase id="1" name="concept extraction">
+List every distinct principle the instructor explicitly teaches.
+For each:
+  CONCEPT: [the teaching, close to verbatim]
+  IMAGEABLE: YES / NO — can an image show which option applies it correctly?
+Keep only YES concepts.
+</phase>
 
----
+<phase id="2" name="frame selection">
+For each YES concept, find the best timestamp.
+Valid frame: stable position, key detail clearly visible, not mid-transition.
+  CONCEPT [N] → [HH:MM:SS]: [one sentence — what is visible]
+Mark unframeable concepts and drop them.
+</phase>
 
-## Format
+<phase id="3" name="question count">
+Count remaining concepts. This is K.
+- Fewer than 2 → output "VIDEO TOO SHORT OR LOW DENSITY" and stop.
+- More than 8 → keep the 8 clearest. State drops in one word each.
+State K.
+</phase>
 
-TIMESTAMP: [MM:SS]
-QUESTION: [self-contained context + specific visible detail]
-A) ...
-B) ...
-C) ...
-D) ...
-ANSWER: [A / B / C / D]
-CONCEPT: [2-5 words, plain mat language]
+<phase id="4" name="question construction">
+Write each question following the format and option types above.
+Ensure both COMPLETION and CLASSIFICATION appear at least once.
+</phase>
+
+<phase id="5" name="validation">
+For each question, check:
+T1 — Can a practitioner answer without the image, from the concept alone? FAIL if yes.
+T2 — Can someone answer by describing the image, without the concept? FAIL if yes.
+T3 — Is the correct answer the longest or most technical option? FAIL if yes.
+Rewrite any question that fails.
+</phase>
+
+</phases>
+
+<output_format>
+For each question:
+
+QUESTION [N of K]
+CONCEPT TESTED: [instructor's teaching in one line]
+STEM TYPE: [COMPLETION / CLASSIFICATION]
+TIMESTAMP: [HH:MM:SS]
 EXPERIENCE_LEVEL: [beginner / intermediate / advanced]
 CATEGORY: [gi / no_gi]
 SUBJECT: [guard / passing / submissions / controls / escapes / takedowns]
-RATIONALE: [Coach talking to a student. Why correct? Why each wrong option fails?]
-SHORTCUT_RISK: [LOW / MEDIUM / HIGH]
+SOURCE SECONDS: [integer]
+
+[question stem]
+
+A) [option]   [CORRECT / WRONG-CONTEXT / WRONG-MECHANISM / WRONG-DIRECTION]
+B) [option]   [type]
+C) [option]   [type]
+D) [option]   [type]
+
+ANSWER: [letter]
+VALIDATION: T1=[PASS/FAIL] T2=[PASS/FAIL] T3=[PASS/FAIL]
 
 ---
 
-## Distractor Rules
+After all K questions:
 
-For each question, the four options must collectively include:
-- One option applying a real BJJ principle to the wrong situation
-- One option partially correct but wrong about the mechanism
-- One option describing the opposite of what is happening
-- The correct answer - not the longest or most complete-sounding option
-
----
-
-## Coverage
-
-After the 5 questions:
-- SUBJECT distribution:
-- EXPERIENCE_LEVEL distribution:
-- Highest SHORTCUT_RISK and why:
-- Frame with most occlusion risk:
-- What is missing that the next video should cover:
+CONCEPTS EXTRACTED: [N]
+UNFRAMEABLE: [list]
+K: [N]
+STEM TYPE distribution: [COMPLETION: N, CLASSIFICATION: N]
+SUBJECT distribution: [list]
+EXPERIENCE_LEVEL distribution: [list]
+Weakest question: [N — one sentence why]
+Gap for next video: [one sentence]
+</output_format>
 ```
 
 </details>
