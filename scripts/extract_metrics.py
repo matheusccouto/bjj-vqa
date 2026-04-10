@@ -1,6 +1,7 @@
 """Extract evaluation metrics from inspect-ai JSON log."""
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -26,7 +27,7 @@ def main(log_dir: str) -> None:
     print(f"accuracy={accuracy}")
 
     # Output to GITHUB_OUTPUT if available
-    github_output = sys.environ.get("GITHUB_OUTPUT")
+    github_output = os.environ.get("GITHUB_OUTPUT")
     if github_output:
         with Path(github_output).open("a") as f:
             f.write(f"accuracy={accuracy}\n")
