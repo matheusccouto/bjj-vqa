@@ -78,6 +78,7 @@ Contributions are pairs of (image + question) submitted as a single PR.
 
 **Image requirements**
 - JPEG, extracted manually from a CC BY or CC BY-SA YouTube video
+- Max resolution: 720p (1280px width) - higher resolutions will be resized
 - Filename: next sequential 5-digit ID (e.g. `00006.jpg`)
 - Commit the frame directly
 
