@@ -16,6 +16,9 @@ This dataset contains frames extracted from Creative Commons licensed YouTube vi
 | [Ataque duplo com a Giulia - Chave de braço para Omoplata -Cobrinha](https://youtube.com/watch?v=DDtR7gEI3hc) | Cobrinha Brazilian Jiu-Jitsu & Fitness | [YouTube](https://youtube.com/watch?v=DDtR7gEI3hc) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00030-00035 |
 | [Puxando para Guarda X finalizando no arm Lock!!](https://youtube.com/watch?v=b4Khpj4Hxg0) | Cobrinha Brazilian Jiu-Jitsu & Fitness | [YouTube](https://youtube.com/watch?v=b4Khpj4Hxg0) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00036-00039 |
 | [Conceito do Estrangulamento da Guilhotina no Jiu Jitsu](https://youtube.com/watch?v=7fEGY0YnlQs) | Cobrinha Brazilian Jiu-Jitsu & Fitness | [YouTube](https://youtube.com/watch?v=7fEGY0YnlQs) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00040-00043 |
+| [Puxando direto para Guarda X usando gancho para raspar!!](https://youtube.com/watch?v=AybfgO8HO6o) | Cobrinha Brazilian Jiu-Jitsu & Fitness | [YouTube](https://youtube.com/watch?v=AybfgO8HO6o) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00044-00047 |
+| [Pegada Das Costas com o Oponente de 4 Apoios | Ataque Duplo | Cesar| Cobrinha BJJ](https://youtube.com/watch?v=L9Pl-4-fhvw) | Cobrinha Brazilian Jiu-Jitsu & Fitness | [YouTube](https://youtube.com/watch?v=L9Pl-4-fhvw) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00048-00053 |
+| [Passagem de guarda com pegada das costas| Rafa| Cobrinha](https://youtube.com/watch?v=-oE5O-a6hMI) | Cobrinha Brazilian Jiu-Jitsu & Fitness | [YouTube](https://youtube.com/watch?v=-oE5O-a6hMI) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00054-00057 |
 
 ## How to attribute
 

@@ -46,7 +46,7 @@ works. Evaluation results are stored in `.eval_results/` in the **model's** repo
 
 ## Dataset
 
-1 question · gi only · single video source · intermediate
+Questions from CC-licensed BJJ instructional videos. Gi and no-gi positions across all experience levels.
 
 Images live in `data/images/` and are committed to this repo. The packaged dataset (images + metadata) is published to Hugging Face Hub on each GitHub release.
 
@@ -238,6 +238,7 @@ EXPERIENCE_LEVEL: [beginner / intermediate / advanced]
 CATEGORY: [gi / no_gi]
 SUBJECT: [guard / passing / submissions / controls / escapes / takedowns]
 SOURCE SECONDS: [integer]
+SOURCE URL: https://youtu.be/<VIDEO_ID>?t=<SECONDS>
 
 [question stem]
 
@@ -268,14 +269,7 @@ Gap for next video: [one sentence]
 
 ## Sources
 
-All frames extracted from Creative Commons licensed videos.
-
-| Video | Author | License | Used at |
-|-------|--------|---------|---------|
-| [Armlock X Triangulo Partindo da Guarda Fechada](https://youtube.com/watch?v=SzL_uObk8fk) | Cobrinha BJJ & Fitness | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 00001 |
-
-When using this dataset, please attribute:
-> Frames from "Armlock X Triangulo Partindo da Guarda Fechada" by Cobrinha Brazilian Jiu-Jitsu & Fitness, CC BY 4.0.
+All frames are extracted from Creative Commons licensed YouTube videos. See [ATTRIBUTIONS.md](ATTRIBUTIONS.md) for full source attribution following the TASL framework.
 
 ## Citation
 

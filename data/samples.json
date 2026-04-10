@@ -686,5 +686,229 @@
     "category": "no_gi",
     "subject": "submissions",
     "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=260s"
+  },
+  {
+    "id": "00044",
+    "image": "images/00044.jpg",
+    "question": "The specific grip configuration established here is",
+    "choices": [
+      "necessary because holding the fabric quickly tires their grips",
+      "an optional tie-up that is primarily used for judo takedowns",
+      "a defensive frame intended to keep the opponent away from you",
+      "the proper fighting base to pull directly into the X-guard"
+    ],
+    "answer": "D",
+    "experience_level": "beginner",
+    "category": "gi",
+    "subject": "guard",
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=23s"
+  },
+  {
+    "id": "00045",
+    "image": "images/00045.jpg",
+    "question": "By applying pressure exactly as shown here, the instructor expects the opponent to",
+    "choices": [
+      "push back, which gives you the momentum to execute the sweep",
+      "stand up, which gives you the space to safely escape the guard",
+      "freeze, because extending the leg tires out their core muscles",
+      "pull away, which lets you drag their base directly over you"
+    ],
+    "answer": "A",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "guard",
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=37s"
+  },
+  {
+    "id": "00046",
+    "image": "images/00046.jpg",
+    "question": "The specific leg positioning being demonstrated right now is",
+    "choices": [
+      "a mistake that invites the bottom player to lock the choke",
+      "a crucial adjustment designed to avoid the triangle choke",
+      "the standard entry point to transition into the 50/50 guard",
+      "effective primarily because it cramps the opponent's hamstring"
+    ],
+    "answer": "B",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "passing",
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=55s"
+  },
+  {
+    "id": "00047",
+    "image": "images/00047.jpg",
+    "question": "To finish the guard pass from this exact stage, your left hand must",
+    "choices": [
+      "block their vision to completely shut down their frames",
+      "grab the far collar to set up an immediate submission",
+      "isolate their near hip so you can stabilize side control",
+      "push their leg away so they return back into your guard"
+    ],
+    "answer": "C",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "passing",
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=72s"
+  },
+  {
+    "id": "00048",
+    "image": "images/00048.jpg",
+    "question": "The leg configuration shown here is",
+    "choices": [
+      "a mistake that lets them slide their hips out",
+      "a temporary control to stretch a tight opponent",
+      "a scoring position if held for three seconds",
+      "effective because it hooks inside their thighs"
+    ],
+    "answer": "B",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "controls",
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=255s"
+  },
+  {
+    "id": "00049",
+    "image": "images/00049.jpg",
+    "question": "Regarding the specific leg positioning demonstrated here, the instructor emphasizes that it provides",
+    "choices": [
+      "the connection to establish your first hooking leg",
+      "the downward pressure to pin their far side arm",
+      "the necessary angle to execute the shoulder roll",
+      "a sturdy frame to stop them from rolling forward"
+    ],
+    "answer": "C",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "controls",
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=228s"
+  },
+  {
+    "id": "00050",
+    "image": "images/00050.jpg",
+    "question": "In the specific rolling stage shown here, the instructor's key detail is that",
+    "choices": [
+      "your hip touches before your left foot posts",
+      "your left hook is inserted as you fall back",
+      "your right leg kicks over to force the sweep",
+      "your left foot posts before your hip touches"
+    ],
+    "answer": "D",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "controls",
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=242s"
+  },
+  {
+    "id": "00051",
+    "image": "images/00051.jpg",
+    "question": "The specific head positioning demonstrated in this image is",
+    "choices": [
+      "critical to prevent them from escaping the back",
+      "a mistake that creates space for them to escape",
+      "effective mainly because it isolates their arm",
+      "a common setup to lock the bow and arrow choke"
+    ],
+    "answer": "A",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "controls",
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=295s"
+  },
+  {
+    "id": "00052",
+    "image": "images/00052.jpg",
+    "question": "From this specific control shown after falling to the left, the instructor highlights that",
+    "choices": [
+      "you must cross your feet to fully secure their hips",
+      "you have the dual option to attack the arm or neck",
+      "your immediate priority is to switch to a body lock",
+      "you should release the wrist grip to grab the collar"
+    ],
+    "answer": "B",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "submissions",
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=275s"
+  },
+  {
+    "id": "00053",
+    "image": "images/00053.jpg",
+    "question": "The specific connection made with the left leg in this starting position is",
+    "choices": [
+      "effective only after you secure the collar grip",
+      "a mistake that prevents you from stepping around",
+      "the first detail required to safely open the base",
+      "used to clamp their near leg so they cannot post"
+    ],
+    "answer": "C",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "controls",
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=221s"
+  },
+  {
+    "id": "00054",
+    "image": "images/00054.jpg",
+    "question": "In the passing sequence shown, releasing your grip on their lower body to hug the head early will result in",
+    "choices": [
+      "them pinning their hips down so firmly that you get stuck",
+      "leaving your neck exposed to a loop choke from the bottom",
+      "them hip escaping away and bringing their knee back in",
+      "them recovering guard by bench pressing your chest away"
+    ],
+    "answer": "C",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "passing",
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=147s"
+  },
+  {
+    "id": "00055",
+    "image": "images/00055.jpg",
+    "question": "When the opponent secures the traps shown and forces a forward roll, the action of posting your forehead on the mat is",
+    "choices": [
+      "the first thing to do to stop their rolling momentum",
+      "an effective way to break their posture inside the closed guard",
+      "a method to stop the roll by creating a fulcrum on their shoulder",
+      "a mistake that accelerates their roll by throwing your weight forward"
+    ],
+    "answer": "A",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "escapes",
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=223s"
+  },
+  {
+    "id": "00056",
+    "image": "images/00056.jpg",
+    "question": "When the opponent adopts the defensive posture shown to block your second hook, the correct method to create space is",
+    "choices": [
+      "making space for the hook by pushing their knee with your hand",
+      "curling yourself into a tight ball so they are forced to open up",
+      "pummeling your frames inside to win the inside space control",
+      "bridging and stretching your body out to lengthen them"
+    ],
+    "answer": "D",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "controls",
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=287s"
+  },
+  {
+    "id": "00057",
+    "image": "images/00057.jpg",
+    "question": "In the specific back-take transition shown, maintaining your head in its current position serves as",
+    "choices": [
+      "a way to stop them from escaping by hooking their jaw with your chin",
+      "a constant monitor to block them from falling to the escape side",
+      "an anchor point to apply heavy shoulder pressure from top half guard",
+      "a mistake because it opens up space for them to pummel back inside"
+    ],
+    "answer": "B",
+    "experience_level": "advanced",
+    "category": "gi",
+    "subject": "controls",
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=503s"
   }
 ]
