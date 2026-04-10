@@ -9,15 +9,15 @@
 - [x] pyproject.toml metadata (keywords, classifiers, urls)
 - [x] README limitations section
 - [x] Expandir test coverage (22 tests: schema + CLI + task)
+- [x] Workflow_dispatch para multi-model eval com submission HF
+- [x] Melhorar error messages no CLI
+- [x] Type annotations completas no CLI
 
 ---
 
 ## Easy (code only, no new questions)
 
-### Medium Priority
-
-- [ ] Melhorar error messages no CLI
-- [ ] Type annotations completas no CLI
+(All completed)
 
 ---
 
@@ -25,7 +25,6 @@
 
 ### High Priority
 
-- [ ] Rodar eval com outros modelos (GPT-4o, Claude, Qwen-VL, LLaVA)
 - [ ] Registrar benchmark na lista oficial do HF Community Evals
 
 ### Medium Priority

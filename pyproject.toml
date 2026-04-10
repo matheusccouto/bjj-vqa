@@ -53,9 +53,17 @@ select = ["ALL"]
 "tests/**/*.py" = [
     "ANN",    # type annotations not required in tests
     "S101",   # assert-used
+    "D401",   # docstring imperative mood - fixtures describe what they return
+    "PLC0415",# import not at top level - needed for env var setup
+    "ARG002", # unused method argument - pytest fixtures injected by framework
 ]
 "src/bjj_vqa/cli.py" = [
     "T201",   # print-used - CLI uses print for output
+]
+"scripts/**/*.py" = [
+    "INP001", # implicit namespace package - scripts are standalone
+    "T201",   # print-used - scripts output to stdout
+    "PLR2004",# magic value comparison - acceptable for simple scripts
 ]
 
 [tool.ty.environment]

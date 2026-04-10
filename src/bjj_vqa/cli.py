@@ -8,10 +8,11 @@ import os
 import sys
 
 from datasets import Dataset, DatasetDict
+from huggingface_hub.utils import HfHubHTTPError
 from PIL import Image
 from pydantic import ValidationError
 
-from bjj_vqa.schema import DATA_DIR, SampleRecord
+from bjj_vqa.schema import SampleRecord, get_data_dir
 
 
 def _image_to_data_uri(img: Image.Image) -> str:
@@ -41,14 +42,22 @@ def main() -> None:
 
 def validate() -> None:
     """Validate samples.json schema and image paths."""
-    data_path = DATA_DIR / "samples.json"
+    data_dir = get_data_dir()
+    data_path = data_dir / "samples.json"
+
     try:
-        data = json.loads(data_path.read_text())
+        data: list[dict] = json.loads(data_path.read_text())
     except FileNotFoundError:
-        print(f"ERROR: {data_path} not found")
+        print(f"ERROR: samples.json not found at {data_path}")
+        print("Hint: Run from project root or set BJJ_VQA_DATA_DIR")
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"ERROR: Invalid JSON in {data_path}")
+        print(f"  Line {e.lineno}, column {e.colno}: {e.msg}")
         sys.exit(1)
 
-    errors = []
+    errors: list[str] = []
+    valid_count = 0
 
     for record in data:
         rid = record.get("id", "UNKNOWN")
@@ -60,40 +69,62 @@ def validate() -> None:
             schema_failed = True
             for err in e.errors():
                 field = err["loc"][0]
+                value = record.get(field, "missing")
                 msg = err["msg"]
-                errors.append(f"{rid}: {field} - {msg}")
+                errors.append(f"  {rid}: {field}='{value}' - {msg}")
 
-        # Only check image if schema passed
         if not schema_failed:
-            image_path = DATA_DIR / record.get("image", "")
+            image_rel = record.get("image", "")
+            image_path = data_dir / image_rel
             if not image_path.exists():
-                errors.append(f"{rid}: image '{image_path}' not found")
+                errors.append(f"  {rid}: image '{image_rel}' not found at {image_path}")
+            else:
+                valid_count += 1
 
     if errors:
-        print("Validation failed:")
+        print(f"Validation failed ({len(errors)} errors):")
         for e in errors:
-            print(f"  - {e}")
+            print(e)
         sys.exit(1)
 
-    print(f"OK: {len(data)} records valid")
+    print(f"OK: {valid_count}/{len(data)} records valid")
 
 
 def publish(repo: str, tag: str) -> None:
     """Publish dataset to Hugging Face Hub."""
-    token = _env_or_exit("HF_TOKEN")
-    data_path = DATA_DIR / "samples.json"
-    data = json.loads(data_path.read_text())
+    token = _require_env("HF_TOKEN")
+    data_dir = get_data_dir()
+    data_path = data_dir / "samples.json"
 
-    records = [SampleRecord.model_validate(r) for r in data]
+    try:
+        data: list[dict] = json.loads(data_path.read_text())
+    except FileNotFoundError:
+        print(f"ERROR: samples.json not found at {data_path}")
+        print("Hint: Run 'bjj-vqa validate' first to create dataset")
+        sys.exit(1)
 
-    # Convert images to base64 data URIs for inspect-ai compatibility
-    # (inspect-ai uses .to_list() which returns raw Arrow format for Image columns)
-    images = [_image_to_data_uri(Image.open(DATA_DIR / r.image)) for r in records]
+    try:
+        records = [SampleRecord.model_validate(r) for r in data]
+    except ValidationError:
+        print("ERROR: Invalid records in samples.json")
+        print("Hint: Run 'bjj-vqa validate' to see detailed errors")
+        sys.exit(1)
+
+    # Convert images to base64 data URIs
+    images: list[str] = []
+    for r in records:
+        try:
+            img = Image.open(data_dir / r.image)
+            images.append(_image_to_data_uri(img))
+        except FileNotFoundError:
+            print(f"ERROR: Image not found: {r.image}")
+            print("Hint: Run 'bjj-vqa validate' to check image paths")
+            sys.exit(1)
 
     dataset = Dataset.from_dict(
         {
             "id": [r.id for r in records],
-            "image": images,  # base64 data URIs as strings
+            "image": images,
             "question": [r.question for r in records],
             "choices": [r.choices for r in records],
             "answer": [r.answer for r in records],
@@ -104,18 +135,29 @@ def publish(repo: str, tag: str) -> None:
         },
     )
 
-    # Create DatasetDict with 'test' split for benchmark compatibility
     dataset_dict = DatasetDict({"test": dataset})
 
-    dataset_dict.push_to_hub(repo_id=repo, token=token, commit_message=f"Release {tag}")
+    try:
+        dataset_dict.push_to_hub(
+            repo_id=repo,
+            token=token,
+            commit_message=f"Release {tag}",
+        )
+    except HfHubHTTPError as e:
+        print("ERROR: Failed to push to Hugging Face Hub")
+        print(f"  {e}")
+        print("Hint: Check HF_TOKEN has write access to repo")
+        sys.exit(1)
 
-    print(f"Published to {repo} with tag {tag}")
+    print(f"Published {len(records)} records to {repo}")
     print(f"https://huggingface.co/datasets/{repo}")
 
 
-def _env_or_exit(name: str) -> str:
+def _require_env(name: str) -> str:
+    """Get required environment variable or exit with error."""
     val = os.environ.get(name)
     if not val:
-        print(f"ERROR: {name} not set")
+        print(f"ERROR: Environment variable {name} is required but not set")
+        print("Hint: Set it in your shell or .env file")
         sys.exit(1)
     return val

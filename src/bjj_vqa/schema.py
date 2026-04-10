@@ -1,11 +1,19 @@
 """Schema and constants for BJJ-VQA dataset."""
 
+import os
 from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+
+def get_data_dir() -> Path:
+    """Get data directory from env var or default."""
+    default_path = Path(__file__).parent.parent.parent / "data"
+    return Path(os.environ.get("BJJ_VQA_DATA_DIR", default_path))
+
+
+DATA_DIR = get_data_dir()
 
 Answer = Literal["A", "B", "C", "D"]
 ExperienceLevel = Literal["beginner", "intermediate", "advanced"]

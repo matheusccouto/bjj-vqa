@@ -62,7 +62,15 @@ class TestValidSample:
 
     def test_all_subjects(self):
         """All valid subjects."""
-        for subj in ["guard", "passing", "submissions", "controls", "escapes", "takedowns"]:
+        subjects = [
+            "guard",
+            "passing",
+            "submissions",
+            "controls",
+            "escapes",
+            "takedowns",
+        ]
+        for subj in subjects:
             record = {
                 "id": "00001",
                 "image": "images/00001.jpg",

@@ -1,0 +1,51 @@
+name: Eval Model
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_id:
+        description: 'Model ID on OpenRouter (e.g. anthropic/claude-opus-4-5)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    outputs:
+      accuracy: ${{ steps.extract.outputs.accuracy }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Run evaluation
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: uv run inspect eval src/bjj_vqa/task.py --model openrouter/${{ inputs.model_id }} --log-dir eval_results/ --log-format json
+      - name: Extract metrics
+        id: extract
+        run: uv run python scripts/extract_metrics.py eval_results
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-${{ inputs.model_id }}
+          path: eval_results/
+          retention-days: 30
+
+  submit-to-hf:
+    needs: eval
+    runs-on: ubuntu-latest
+    env:
+      EVAL_DATE: ${{ github.run_started_at }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked
+      - name: Submit PR to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: uv run python scripts/submit_hf.py "${{ inputs.model_id }}" "${{ needs.eval.outputs.accuracy }}" "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
