@@ -16,11 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       accuracy: ${{ steps.extract.outputs.accuracy }}
+      artifact_name: ${{ steps.sanitize.outputs.name }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+      - name: Sanitize model ID for artifact name
+        id: sanitize
+        run: echo "name=$(echo '${{ inputs.model_id }}' | tr '/' '-')" >> $GITHUB_OUTPUT
       - run: uv sync --locked
       - name: Run evaluation
         env:
@@ -32,7 +36,7 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: eval-${{ inputs.model_id }}
+          name: eval-${{ steps.sanitize.outputs.name }}
           path: eval_results/
           retention-days: 30
 
