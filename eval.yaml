@@ -1,28 +1,11 @@
-name: BJJ-VQA
-description: >
-  Brazilian Jiu-Jitsu Visual Q&A benchmark tests if Vision-Language Models
-  understand BJJ techniques through multiple-choice questions evaluating
-  correct executions, common mistakes, and real techniques.
-
-  Each question is annotated with three metadata dimensions:
-  - experience_level: beginner, intermediate, or advanced
-  - gi_nogi: gi or no_gi
-  - subject: guard, passing, submissions, controls, escapes, or takedowns
+name: "BJJ-VQA"
+description: "Brazilian Jiu-Jitsu Visual Question Answering Benchmark"
 evaluation_framework: "inspect-ai"
-
 tasks:
-  - id: bjj_vqa_techniques
-    config: default
-    split: test
-
+  - id: "bjj_vqa"
+    split: "test"
     field_spec:
-      input: question
-      input_image: image
-      target: answer
-      choices: choices
-
-    solvers:
-      - name: multiple_choice
-
-    scorers:
-      - name: choice
+      input: "question"
+      input_image: "image"
+      target: "answer"
+      choices: "choices"

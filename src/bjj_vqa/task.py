@@ -3,7 +3,7 @@
 from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, json_dataset
 from inspect_ai.model import ChatMessageUser, ContentImage, ContentText, GenerateConfig
-from inspect_ai.scorer import choice
+from inspect_ai.scorer import accuracy, choice, grouped
 from inspect_ai.solver import multiple_choice
 
 from bjj_vqa.schema import DATA_DIR
@@ -46,5 +46,11 @@ def bjj_vqa() -> Task:
         dataset=dataset,
         solver=multiple_choice(),
         scorer=choice(),
+        metrics=[
+            accuracy(),
+            grouped(accuracy(), "experience_level"),
+            grouped(accuracy(), "category"),
+            grouped(accuracy(), "subject"),
+        ],
         config=GenerateConfig(max_tokens=128),
     )
