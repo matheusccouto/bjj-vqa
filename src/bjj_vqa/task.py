@@ -2,7 +2,7 @@
 
 from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, json_dataset
-from inspect_ai.model import ChatMessageUser, ContentImage, ContentText
+from inspect_ai.model import ChatMessageUser, ContentImage, ContentText, GenerateConfig
 from inspect_ai.scorer import choice
 from inspect_ai.solver import multiple_choice
 
@@ -46,4 +46,5 @@ def bjj_vqa() -> Task:
         dataset=dataset,
         solver=multiple_choice(),
         scorer=choice(),
+        config=GenerateConfig(max_tokens=128),
     )
