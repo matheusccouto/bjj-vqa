@@ -6,16 +6,13 @@
 - [x] Per-category accuracy breakdown (experience_level, category, subject)
 - [x] Clarificar licenses (GPL code, CC BY-SA dataset - correto)
 - [x] Dataset split (100% test, eval-only - correto)
+- [x] pyproject.toml metadata (keywords, classifiers, urls)
+- [x] README limitations section
+- [x] Expandir test coverage (22 tests: schema + CLI + task)
 
 ---
 
 ## Easy (code only, no new questions)
-
-### High Priority
-
-- [ ] Adicionar keywords/classifiers ao `pyproject.toml`
-- [ ] Expandir test coverage (schema validation, CLI tests)
-- [ ] Documentar limitations no README
 
 ### Medium Priority
 
