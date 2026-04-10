@@ -4,13 +4,13 @@
 
 - [x] `eval.yaml` para HuggingFace Community Eval
 - [x] Per-category accuracy breakdown (experience_level, category, subject)
-- [x] Clarificar licenses (GPL code, CC BY-SA dataset - correto)
+- [x] Clarificar licenças (GPL código, CC BY-SA dataset - correto)
 - [x] Dataset split (100% test, eval-only - correto)
 - [x] pyproject.toml metadata (keywords, classifiers, urls)
 - [x] README limitations section
-- [x] Expandir test coverage (22 tests: schema + CLI + task)
+- [x] Expandir cobertura de testes (22 tests: schema + CLI + task)
 - [x] Workflow_dispatch para multi-model eval com submission HF
-- [x] Melhorar error messages no CLI
+- [x] Melhorar mensagens de erro no CLI
 - [x] Type annotations completas no CLI
 
 ---
@@ -31,23 +31,23 @@
 
 - [ ] Consistency metrics (CaCV, CaQV)
 - [ ] Robustness testing (image noise, question paraphrasing)
-- [ ] Confusion analysis (identificar systematic errors)
+- [ ] Confusion analysis (identificar erros sistemáticos)
 
 ---
 
 ## Hard (requires human effort)
 
-### Needs new questions ( você only)
+### Needs new questions (você only)
 
 - [ ] Balancear dataset: escapes (1→?), passing (3→?), no_gi (9→?)
 - [ ] Expandir advanced level (7→?)
-- [ ] Human baseline (BJJ practitioners answering questions)
+- [ ] Human baseline (practitioners respondendo questions)
 - [ ] Video extension (clips instead of frames)
 
 ### Future considerations
 
 - [ ] `reasoning_type` metadata (perception/mechanics/decision/counterfactual)
-- [ ] Expandir question diversity ("why", "identify" questions)
+- [ ] Expandir diversidade de questions ("why", "identify" questions)
 
 ---
 
