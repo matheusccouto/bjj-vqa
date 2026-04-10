@@ -30,6 +30,15 @@ Each entry in samples.json has: id, image (relative path), question, choices (ar
 
 CI automatically validates the schema. To validate locally, run the inline validation script in validate.yml manually.
 
+## Related Work
+
+If asked to compare with similar datasets, reference:
+- [Sports-QA](https://arxiv.org/abs/2401.01505) — sports VideoQA methodology
+- [ActionAtlas](https://arxiv.org/abs/2410.05774) — distinguishing similar sports actions
+- [PlantVillageVQA](https://huggingface.co/datasets/sohamjune/PlantVillageVQA) — domain-specific VQA structure
+
+BJJ-VQA is the first martial arts VQA benchmark.
+
 ## Conventions
 
 - IDs: 5 digits zero-padded (00001, 00002...)
