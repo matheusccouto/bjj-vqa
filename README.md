@@ -271,6 +271,21 @@ Gap for next video: [one sentence]
 
 All frames are extracted from Creative Commons licensed YouTube videos. See [ATTRIBUTIONS.md](ATTRIBUTIONS.md) for full source attribution following the TASL framework.
 
+## Limitations
+
+**Single-frame only**: Questions are based on still frames, not video. Temporal context (motion, transitions, sequence) is not captured.
+
+**English only**: Questions and answers are in English. Non-English speakers or multilingual evaluation not supported.
+
+**Source diversity**: All questions currently come from Cobrinha BJJ videos. Other instructors/styles may have different technique preferences.
+
+**Dataset imbalance**:
+- 67% intermediate, 21% beginner, 12% advanced
+- 84% gi, 16% no_gi
+- Some subjects have few questions (escapes: 1, passing: 3)
+
+**Interpret accuracy carefully**: Categories with <5 questions are not statistically significant. Per-category accuracy should be interpreted with sample size in mind.
+
 ## Citation
 
 ```bibtex
