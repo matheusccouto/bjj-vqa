@@ -7,6 +7,11 @@ on:
         description: 'Model ID on OpenRouter (e.g. anthropic/claude-opus-4-5)'
         required: true
         type: string
+      submit_to_hf:
+        description: 'Submit results to HuggingFace (requires HF repo to exist)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -42,6 +47,7 @@ jobs:
 
   submit-to-hf:
     needs: eval
+    if: ${{ inputs.submit_to_hf }}
     runs-on: ubuntu-latest
     env:
       EVAL_DATE: ${{ github.run_started_at }}
