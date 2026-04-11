@@ -13,11 +13,16 @@ def normalize_model_id(model_id: str) -> str:
     Examples:
         openrouter/anthropic/claude-opus-4-5 -> anthropic/claude-opus-4-5
         anthropic/anthropic/claude-opus-4-5 -> anthropic/claude-opus-4-5
+        google/gemma-4-31b-it:free -> google/gemma-4-31b-it
 
     """
     # Remove openrouter/ prefix
     if model_id.startswith("openrouter/"):
         model_id = model_id.removeprefix("openrouter/")
+
+    # Remove :free suffix (OpenRouter free tier designation)
+    if ":free" in model_id:
+        model_id = model_id.replace(":free", "")
 
     # Handle duplicated provider prefix
     parts = model_id.split("/")
