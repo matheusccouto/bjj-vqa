@@ -24,7 +24,7 @@ jobs:
           enable-cache: true
       - name: Sanitize model ID for artifact name
         id: sanitize
-        run: echo "name=$(echo '${{ inputs.model_id }}' | tr '/' '-')" >> $GITHUB_OUTPUT
+        run: echo "name=$(echo '${{ inputs.model_id }}' | tr '/:' '-')" >> $GITHUB_OUTPUT
       - run: uv sync --locked
       - name: Run evaluation
         env:
