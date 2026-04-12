@@ -3,9 +3,10 @@
 from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, json_dataset
 from inspect_ai.model import ChatMessageUser, ContentImage, ContentText, GenerateConfig
-from inspect_ai.scorer import accuracy, choice, grouped
+from inspect_ai.scorer import accuracy, grouped
 from inspect_ai.solver import multiple_choice
 
+from bjj_vqa.scorer import choice_robust
 from bjj_vqa.schema import DATA_DIR
 
 # Template optimized for models that generate verbose reasoning
@@ -57,7 +58,7 @@ def bjj_vqa() -> Task:
     return Task(
         dataset=dataset,
         solver=multiple_choice(template=MC_TEMPLATE),
-        scorer=choice(),
+        scorer=choice_robust(),
         metrics=[
             accuracy(),
             grouped(accuracy(), "experience_level"),
