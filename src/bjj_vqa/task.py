@@ -2,24 +2,11 @@
 
 from inspect_ai import Task, task
 from inspect_ai.dataset import Sample, json_dataset
-from inspect_ai.model import ChatMessageUser, ContentImage, ContentText, GenerateConfig
-from inspect_ai.scorer import accuracy, grouped
+from inspect_ai.model import ChatMessageUser, ContentImage, ContentText
+from inspect_ai.scorer import accuracy, choice, grouped
 from inspect_ai.solver import multiple_choice
 
-from bjj_vqa.scorer import choice_robust
 from bjj_vqa.schema import DATA_DIR
-
-# Template optimized for models that generate verbose reasoning
-# Forces concise letter-only response to avoid truncation
-MC_TEMPLATE = """
-Answer this multiple choice question about Brazilian Jiu-Jitsu.
-
-{question}
-
-{choices}
-
-Respond with ONLY the letter (A, B, C, or D). Do not explain your reasoning.
-""".strip()
 
 
 def record_to_sample(record: dict) -> Sample:
@@ -57,13 +44,12 @@ def bjj_vqa() -> Task:
 
     return Task(
         dataset=dataset,
-        solver=multiple_choice(template=MC_TEMPLATE),
-        scorer=choice_robust(),
+        solver=multiple_choice(),
+        scorer=choice(),
         metrics=[
             accuracy(),
             grouped(accuracy(), "experience_level"),
             grouped(accuracy(), "category"),
             grouped(accuracy(), "subject"),
         ],
-        config=GenerateConfig(max_tokens=32),
     )
