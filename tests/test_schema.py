@@ -217,12 +217,12 @@ class TestInvalidSample:
             SampleRecord.model_validate(record)
 
     def test_wrong_choice_count_too_few(self):
-        """Less than 4 choices."""
+        """Less than 2 choices."""
         record = {
             "id": "00001",
             "image": "images/00001.jpg",
             "question": "Test?",
-            "choices": ["A", "B", "C"],  # 3 choices
+            "choices": ["A"],  # 1 choice
             "answer": "A",
             "experience_level": "beginner",
             "category": "gi",
@@ -247,3 +247,58 @@ class TestInvalidSample:
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
+
+    def test_answer_out_of_range(self):
+        """Answer letter beyond the number of choices."""
+        record = {
+            "id": "00001",
+            "image": ["images/00001_a.jpg", "images/00001_b.jpg"],
+            "question": "Which image?",
+            "choices": ["Image A", "Image B"],
+            "answer": "C",  # Only A and B are valid
+            "experience_level": "advanced",
+            "category": "no_gi",
+            "subject": "controls",
+            "source": "course/01",
+        }
+        with pytest.raises(ValidationError):
+            SampleRecord.model_validate(record)
+
+
+class TestImageChoiceSample:
+    """Tests for multi-image choice records (private benchmark format)."""
+
+    def test_two_image_choices(self):
+        """Valid record with two image options."""
+        record = {
+            "id": "00001",
+            "image": ["images/00001_a.jpg", "images/00001_b.jpg"],
+            "question": "Which position is correct?",
+            "choices": ["Image A", "Image B"],
+            "answer": "B",
+            "experience_level": "advanced",
+            "category": "no_gi",
+            "subject": "controls",
+            "source": "course/01",
+        }
+        sample = SampleRecord.model_validate(record)
+        assert sample.answer == "B"
+        assert len(sample.choices) == len(record["choices"])
+        assert isinstance(sample.image, list)
+
+    def test_three_image_choices(self):
+        """Valid record with three image options."""
+        record = {
+            "id": "00002",
+            "image": ["images/00002_a.jpg", "images/00002_b.jpg", "images/00002_c.jpg"],
+            "question": "Which is the correct escape?",
+            "choices": ["Image A", "Image B", "Image C"],
+            "answer": "C",
+            "experience_level": "advanced",
+            "category": "no_gi",
+            "subject": "escapes",
+            "source": "course/02",
+        }
+        sample = SampleRecord.model_validate(record)
+        assert sample.answer == "C"
+        assert len(sample.choices) == len(record["choices"])

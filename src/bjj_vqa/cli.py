@@ -6,13 +6,14 @@ import io
 import json
 import os
 import sys
+from pathlib import Path
 
 from datasets import Dataset, DatasetDict
 from huggingface_hub.utils import HfHubHTTPError
 from PIL import Image
 from pydantic import ValidationError
 
-from bjj_vqa.schema import SampleRecord, get_data_dir
+from bjj_vqa.schema import SampleRecord, as_image_list, get_data_dir
 
 
 def _image_to_data_uri(img: Image.Image) -> str:
@@ -40,6 +41,29 @@ def main() -> None:
     args.func(args)
 
 
+def _validate_record(record: dict, data_dir: Path) -> list[str]:
+    """Return a list of error strings for a single record (empty if valid)."""
+    rid = record.get("id", "UNKNOWN")
+    errors: list[str] = []
+
+    try:
+        SampleRecord.model_validate(record)
+    except ValidationError as e:
+        for err in e.errors():
+            field = err["loc"][0]
+            value = record.get(field, "missing")
+            errors.append(f"  {rid}: {field}='{value}' - {err['msg']}")
+        return errors
+
+    image_rel = record.get("image", "")
+    errors.extend(
+        f"  {rid}: image '{p}' not found at {data_dir / p}"
+        for p in as_image_list(image_rel)
+        if not (data_dir / p).exists()
+    )
+    return errors
+
+
 def validate() -> None:
     """Validate samples.json schema and image paths."""
     data_dir = get_data_dir()
@@ -56,38 +80,17 @@ def validate() -> None:
         print(f"  Line {e.lineno}, column {e.colno}: {e.msg}")
         sys.exit(1)
 
-    errors: list[str] = []
-    valid_count = 0
-
+    all_errors: list[str] = []
     for record in data:
-        rid = record.get("id", "UNKNOWN")
-        schema_failed = False
+        all_errors.extend(_validate_record(record, data_dir))
 
-        try:
-            SampleRecord.model_validate(record)
-        except ValidationError as e:
-            schema_failed = True
-            for err in e.errors():
-                field = err["loc"][0]
-                value = record.get(field, "missing")
-                msg = err["msg"]
-                errors.append(f"  {rid}: {field}='{value}' - {msg}")
-
-        if not schema_failed:
-            image_rel = record.get("image", "")
-            image_path = data_dir / image_rel
-            if not image_path.exists():
-                errors.append(f"  {rid}: image '{image_rel}' not found at {image_path}")
-            else:
-                valid_count += 1
-
-    if errors:
-        print(f"Validation failed ({len(errors)} errors):")
-        for e in errors:
+    if all_errors:
+        print(f"Validation failed ({len(all_errors)} errors):")
+        for e in all_errors:
             print(e)
         sys.exit(1)
 
-    print(f"OK: {valid_count}/{len(data)} records valid")
+    print(f"OK: {len(data)}/{len(data)} records valid")
 
 
 def publish(repo: str, tag: str) -> None:
@@ -110,9 +113,13 @@ def publish(repo: str, tag: str) -> None:
         print("Hint: Run 'bjj-vqa validate' to see detailed errors")
         sys.exit(1)
 
-    # Convert images to base64 data URIs
+    # Convert images to base64 data URIs (single-image records only)
     images: list[str] = []
     for r in records:
+        if isinstance(r.image, list):
+            print("ERROR: publish does not support multi-image records")
+            print("Hint: publish is for the public single-image benchmark only")
+            sys.exit(1)
         try:
             img = Image.open(data_dir / r.image)
             images.append(_image_to_data_uri(img))
