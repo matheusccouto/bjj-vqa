@@ -13,14 +13,16 @@ def record_to_sample(record: dict) -> Sample:
     """Convert a JSON record to an inspect-ai Sample with multimodal input."""
     full_image_path = str(DATA_DIR / record["image"])
 
-    input_content = [
-        ContentImage(image=full_image_path),
-        ContentText(text=record["question"]),
-    ]
-
     return Sample(
         id=record["id"],
-        input=[ChatMessageUser(content=input_content)],
+        input=[
+            ChatMessageUser(
+                content=[
+                    ContentImage(image=full_image_path),
+                    ContentText(text=record["question"]),
+                ],
+            ),
+        ],
         choices=record["choices"],
         target=record["answer"],
         metadata={
