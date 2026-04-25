@@ -23,12 +23,15 @@ def _load_log(log_dir: Path) -> dict:
     return json.loads(logs[-1].read_text())
 
 
+def _is_correct(sample: dict) -> bool:
+    return sample.get("score", {}).get("value") == 1
+
+
 def _accuracy(samples: list[dict]) -> float:
     """Compute overall accuracy from sample results."""
     if not samples:
         return 0.0
-    correct = sum(1 for s in samples if s.get("score", {}).get("value") == 1)
-    return correct / len(samples)
+    return sum(1 for s in samples if _is_correct(s)) / len(samples)
 
 
 def _group_accuracy(samples: list[dict], key: str) -> dict[str, tuple[int, int]]:
@@ -82,7 +85,7 @@ def main() -> None:
         lines.append("")
 
     # Individual questions answered correctly (stem leak candidates)
-    correct_samples = [s for s in samples if s.get("score", {}).get("value") == 1]
+    correct_samples = [s for s in samples if _is_correct(s)]
 
     lines.append("## Stem-leak candidates (answered correctly without image)")
     lines.append("")

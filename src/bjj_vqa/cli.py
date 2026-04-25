@@ -121,7 +121,7 @@ def validate() -> None:
         sys.exit(1)
 
     print(f"OK: {len(data)}/{len(data)} records valid")
-    validate_sources()
+    validate_sources(data)
 
 
 def _load_registry(registry_path: Path) -> list[Source]:
@@ -162,11 +162,10 @@ def _cross_reference_errors(sources: list[Source], samples: list[dict]) -> list[
     return errors
 
 
-def validate_sources() -> None:
+def validate_sources(samples: list[dict] | None = None) -> None:
     """Validate sources/registry.jsonl cross-references against samples.json."""
     project_root = Path(__file__).parent.parent.parent
     registry_path = project_root / "sources" / "registry.jsonl"
-    data_path = get_data_dir() / "samples.json"
 
     try:
         sources = _load_registry(registry_path)
@@ -174,11 +173,13 @@ def validate_sources() -> None:
         print(f"ERROR: registry not found at {registry_path}")
         sys.exit(1)
 
-    try:
-        samples: list[dict] = json.loads(data_path.read_text())
-    except FileNotFoundError:
-        print(f"ERROR: samples.json not found at {data_path}")
-        sys.exit(1)
+    if samples is None:
+        data_path = get_data_dir() / "samples.json"
+        try:
+            samples = json.loads(data_path.read_text())
+        except FileNotFoundError:
+            print(f"ERROR: samples.json not found at {data_path}")
+            sys.exit(1)
 
     errors = _cross_reference_errors(sources, samples)
     if errors:

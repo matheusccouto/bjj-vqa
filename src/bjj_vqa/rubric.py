@@ -116,30 +116,16 @@ def review(question: SampleRecord, image_path: Path) -> RubricResult:
     t7 = _check_t7_format(question)
     tests.append(t7)
 
-    # Reorder to T1-T7
     ordered = {t.test.split("_")[0]: t for t in tests}
-    tests_ordered = [
-        ordered.get("T1", tests[0]),
-        ordered.get("T2", tests[1]),
-        ordered.get("T3", tests[2]),
-        ordered.get("T4", tests[5]),
-        ordered.get("T5", tests[3]),
-        ordered.get("T6", tests[4]),
-        ordered.get("T7", tests[6]),
-    ]
+    tests_ordered = [ordered[f"T{i}"] for i in range(1, 8)]
 
-    all_pass = all(t.passed for t in tests_ordered)
-    any_fail = any(not t.passed for t in tests_ordered)
-
-    if all_pass:
+    if all(t.passed for t in tests_ordered):
         verdict: Verdict = "PASS"
-    elif any_fail:
+    else:
         # T1, T4 failures are REJECT; others are REWRITE
         reject_tests = {"T1_STEM_LEAK", "T4_IMAGE_DEPENDENCY"}
         hard_fail = any(not t.passed and t.test in reject_tests for t in tests_ordered)
         verdict = "REJECT" if hard_fail else "REWRITE"
-    else:
-        verdict = "PASS"
 
     return RubricResult(question_id=question.id, tests=tests_ordered, verdict=verdict)
 
@@ -238,15 +224,14 @@ def _check_t7_format(question: SampleRecord) -> RubricTestResult:
 
     answer_index = ord(question.answer) - ord("A")
     correct_text = options[answer_index]
-    max_len = max(len(o) for o in options)
+    lengths = [len(o) for o in options]
+    max_len = max(lengths)
+    min_len = min(lengths)
 
     failures: list[str] = []
 
     if len(correct_text) == max_len and options.count(correct_text) == 1:
         failures.append("Correct answer is the longest option.")
-
-    lengths = [len(o) for o in options]
-    min_len = min(lengths)
     if max_len > min_len * 2:
         failures.append(
             f"Options have very unequal lengths (min={min_len}, max={max_len}).",
