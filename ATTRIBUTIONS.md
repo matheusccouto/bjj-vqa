@@ -1,5 +1,7 @@
 # Attributions
 
+> This is the human-readable attribution table. The machine-readable source of truth is [`sources/registry.jsonl`](sources/registry.jsonl).
+
 This dataset contains frames extracted from Creative Commons licensed YouTube videos. Each source is attributed below following the TASL framework (Title, Author, Source, License).
 
 ## Sources

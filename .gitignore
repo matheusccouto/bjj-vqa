@@ -140,5 +140,8 @@ Thumbs.db
 *.local.md
 .claude/skills/add-questions/
 
+# Generated rubric report (run manually with ANTHROPIC_API_KEY)
+docs/rubric-report.md
+
 # Private
 data_private/

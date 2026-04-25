@@ -7,13 +7,14 @@ import json
 import os
 import sys
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 from datasets import Dataset, DatasetDict
 from huggingface_hub.utils import HfHubHTTPError
 from PIL import Image
 from pydantic import ValidationError
 
-from bjj_vqa.schema import SampleRecord, as_image_list, get_data_dir
+from bjj_vqa.schema import SampleRecord, Source, as_image_list, get_data_dir
 
 
 def _image_to_data_uri(img: Image.Image) -> str:
@@ -24,13 +25,42 @@ def _image_to_data_uri(img: Image.Image) -> str:
     return f"data:image/jpeg;base64,{img_base64}"
 
 
+def _youtube_video_id(url: str) -> str | None:
+    """Extract YouTube video ID from a URL, or None if not parseable."""
+    parsed = urlparse(url)
+    qs = parse_qs(parsed.query)
+    ids = qs.get("v", [])
+    return ids[0] if ids else None
+
+
 def main() -> None:
     """CLI entry point for BJJ-VQA dataset operations."""
     parser = argparse.ArgumentParser(description="BJJ-VQA CLI")
     subparsers = parser.add_subparsers(required=True)
 
-    validate_cmd = subparsers.add_parser("validate", help="Validate dataset schema")
+    validate_cmd = subparsers.add_parser(
+        "validate",
+        help="Validate dataset schema and sources",
+    )
     validate_cmd.set_defaults(func=lambda _: validate())
+
+    validate_sources_cmd = subparsers.add_parser(
+        "validate-sources",
+        help="Validate sources/registry.jsonl cross-references",
+    )
+    validate_sources_cmd.set_defaults(func=lambda _: validate_sources())
+
+    rubric_cmd = subparsers.add_parser(
+        "rubric",
+        help="Run adversarial rubric on a question",
+    )
+    rubric_cmd.add_argument("question_id", nargs="?", help="Question ID (e.g. 00001)")
+    rubric_cmd.add_argument(
+        "--all",
+        action="store_true",
+        help="Run rubric on all questions",
+    )
+    rubric_cmd.set_defaults(func=lambda a: rubric(a.question_id, run_all=a.all))
 
     publish_cmd = subparsers.add_parser("publish", help="Publish to HuggingFace Hub")
     publish_cmd.add_argument("--repo", required=True, help="Target repo")
@@ -65,7 +95,7 @@ def _validate_record(record: dict, data_dir: Path) -> list[str]:
 
 
 def validate() -> None:
-    """Validate samples.json schema and image paths."""
+    """Validate samples.json schema, image paths, and source registry."""
     data_dir = get_data_dir()
     data_path = data_dir / "samples.json"
 
@@ -91,6 +121,150 @@ def validate() -> None:
         sys.exit(1)
 
     print(f"OK: {len(data)}/{len(data)} records valid")
+    validate_sources()
+
+
+def _load_registry(registry_path: Path) -> list[Source]:
+    """Parse sources/registry.jsonl and return a list of Source objects."""
+    errors: list[str] = []
+    sources: list[Source] = []
+    for i, raw_line in enumerate(registry_path.read_text().splitlines(), 1):
+        stripped = raw_line.strip()
+        if not stripped:
+            continue
+        try:
+            sources.append(Source.model_validate(json.loads(stripped)))
+        except (json.JSONDecodeError, ValidationError) as e:
+            errors.append(f"  registry line {i}: {e}")
+    if errors:
+        print(f"Registry parse failed ({len(errors)} errors):")
+        for e in errors:
+            print(e)
+        sys.exit(1)
+    return sources
+
+
+def _cross_reference_errors(sources: list[Source], samples: list[dict]) -> list[str]:
+    """Return cross-reference errors between registry and samples."""
+    sample_ids = {r["id"] for r in samples}
+    registry_video_ids = {_youtube_video_id(s.url) for s in sources}
+    errors: list[str] = []
+    for record in samples:
+        vid = _youtube_video_id(record.get("source", ""))
+        if vid and vid not in registry_video_ids:
+            errors.append(f"  {record['id']}: source video '{vid}' not in registry")
+    for source in sources:
+        errors.extend(
+            f"  registry '{source.url}': question_id '{qid}' not in samples.json"
+            for qid in source.question_ids
+            if qid not in sample_ids
+        )
+    return errors
+
+
+def validate_sources() -> None:
+    """Validate sources/registry.jsonl cross-references against samples.json."""
+    project_root = Path(__file__).parent.parent.parent
+    registry_path = project_root / "sources" / "registry.jsonl"
+    data_path = get_data_dir() / "samples.json"
+
+    try:
+        sources = _load_registry(registry_path)
+    except FileNotFoundError:
+        print(f"ERROR: registry not found at {registry_path}")
+        sys.exit(1)
+
+    try:
+        samples: list[dict] = json.loads(data_path.read_text())
+    except FileNotFoundError:
+        print(f"ERROR: samples.json not found at {data_path}")
+        sys.exit(1)
+
+    errors = _cross_reference_errors(sources, samples)
+    if errors:
+        print(f"Sources validation failed ({len(errors)} errors):")
+        for e in errors:
+            print(e)
+        sys.exit(1)
+
+    print(f"OK: {len(sources)} sources cover all {len(samples)} questions")
+
+
+def rubric(question_id: str | None, *, run_all: bool = False) -> None:
+    """Run the adversarial rubric on one or all questions."""
+    from bjj_vqa.rubric import review
+
+    data_dir = get_data_dir()
+    data_path = data_dir / "samples.json"
+
+    try:
+        data: list[dict] = json.loads(data_path.read_text())
+    except FileNotFoundError:
+        print(f"ERROR: samples.json not found at {data_path}")
+        sys.exit(1)
+
+    records = {r["id"]: r for r in data}
+
+    if run_all:
+        _rubric_all(records, data_dir)
+        return
+
+    if not question_id:
+        print("ERROR: provide a question ID or use --all")
+        sys.exit(1)
+
+    if question_id not in records:
+        print(f"ERROR: question '{question_id}' not found")
+        sys.exit(1)
+
+    record = records[question_id]
+    sample = SampleRecord.model_validate(record)
+    image_paths = [data_dir / p for p in as_image_list(sample.image)]
+    result = review(sample, image_paths[0])
+
+    print(result.to_markdown())
+    exit_code = (
+        0 if result.verdict == "PASS" else (1 if result.verdict == "REWRITE" else 2)
+    )
+    sys.exit(exit_code)
+
+
+def _rubric_all(records: dict, data_dir: Path) -> None:
+    """Run rubric on all questions, write report to docs/rubric-report.md."""
+    from bjj_vqa.rubric import review
+
+    project_root = Path(__file__).parent.parent.parent
+    report_path = project_root / "docs" / "rubric-report.md"
+
+    lines = ["# Rubric Report\n"]
+    pass_count = rewrite_count = reject_count = 0
+
+    for qid, record in sorted(records.items()):
+        sample = SampleRecord.model_validate(record)
+        image_paths = [data_dir / p for p in as_image_list(sample.image)]
+        result = review(sample, image_paths[0])
+        lines.append(f"## {qid} — {result.verdict}\n")
+        lines.append(result.to_markdown())
+        lines.append("")
+        if result.verdict == "PASS":
+            pass_count += 1
+        elif result.verdict == "REWRITE":
+            rewrite_count += 1
+        else:
+            reject_count += 1
+
+    total = len(records)
+    summary = (
+        f"\n## Summary\n\n"
+        f"- PASS: {pass_count}/{total}\n"
+        f"- REWRITE: {rewrite_count}/{total}\n"
+        f"- REJECT: {reject_count}/{total}\n"
+    )
+    lines.insert(1, summary)
+
+    report_path.write_text("\n".join(lines))
+    print(f"Report written to {report_path}")
+    print(f"PASS: {pass_count} | REWRITE: {rewrite_count} | REJECT: {reject_count}")
 
 
 def publish(repo: str, tag: str) -> None:

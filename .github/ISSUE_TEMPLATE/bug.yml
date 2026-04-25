@@ -1,0 +1,48 @@
+name: Bug report
+description: Something is broken or behaving incorrectly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in the details below.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: Describe the unexpected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Commands or actions that reliably trigger the bug.
+      placeholder: |
+        1. Run `uv run bjj-vqa validate`
+        2. See error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python version, OS, relevant package versions.
+      placeholder: |
+        Python: 3.13.x
+        OS: macOS 14 / Ubuntu 22.04
+        bjj-vqa: 0.2.0
+    validations:
+      required: false
