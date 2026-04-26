@@ -22,22 +22,16 @@ def record_to_sample(
         data_dir = get_data_dir()
     image = record["image"]
 
-    if isinstance(image, list):
-        input_content: list[ContentImage | ContentText] = []
-        for letter, path in zip("ABCD", image, strict=False):
-            input_content.append(ContentText(text=f"Image {letter}:"))
-            if images:
-                input_content.append(ContentImage(image=str(data_dir / path)))
-        input_content.append(ContentText(text=record["question"]))
-    else:
-        input_content = []
-        if images:
-            input_content.append(ContentImage(image=str(data_dir / image)))
-        input_content.append(ContentText(text=record["question"]))
-
     return Sample(
         id=record["id"],
-        input=[ChatMessageUser(content=input_content)],
+        input=[
+            ChatMessageUser(
+                content=[
+                    ContentImage(image=full_image_path),
+                    ContentText(text=record["question"]),
+                ],
+            ),
+        ],
         choices=record["choices"],
         target=record["answer"],
         metadata={
