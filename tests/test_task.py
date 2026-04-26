@@ -61,3 +61,32 @@ def test_missing_fields_raises_keyerror():
 
     with pytest.raises(KeyError):
         record_to_sample(record)
+
+
+def test_list_image_input_format():
+    """Test that list-image records produce interleaved label+image content."""
+    record = {
+        "id": "00001",
+        "image": ["images/00001_a.jpg", "images/00001_b.jpg"],
+        "question": "Which position is correct?",
+        "choices": ["Image A", "Image B"],
+        "answer": "B",
+        "experience_level": "advanced",
+        "category": "no_gi",
+        "subject": "controls",
+        "source": "course/01",
+    }
+    sample = record_to_sample(record)
+
+    content = sample.input[0].content  # ty: ignore[unresolved-attribute]
+    assert isinstance(content, list)
+    expected_len = len(record["image"]) * 2 + 1  # label+image per option, then question
+    assert len(content) == expected_len
+    assert content[0].type == "text"
+    assert content[0].text == "Image A:"  # ty: ignore[unresolved-attribute]
+    assert content[1].type == "image"
+    assert content[2].type == "text"
+    assert content[2].text == "Image B:"  # ty: ignore[unresolved-attribute]
+    assert content[3].type == "image"
+    assert content[4].type == "text"
+    assert content[4].text == "Which position is correct?"  # ty: ignore[unresolved-attribute]

@@ -4,6 +4,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from PIL import Image
@@ -39,7 +40,8 @@ def write_samples(data_dir: Path, samples: list[dict]) -> Path:
 class TestValidate:
     """Tests for validate CLI command."""
 
-    def test_validate_success(self, temp_data_env):
+    @patch("bjj_vqa.cli.validate_sources")
+    def test_validate_success(self, mock_validate_sources, temp_data_env):
         """Validate succeeds with valid samples."""
         valid_samples = [
             {
@@ -115,7 +117,8 @@ class TestValidate:
             validate()
         assert exc_info.value.code == 1
 
-    def test_validate_multiple_samples(self, temp_data_env):
+    @patch("bjj_vqa.cli.validate_sources")
+    def test_validate_multiple_samples(self, mock_validate_sources, temp_data_env):
         """Validate handles multiple samples."""
         # Create additional image
         img = Image.new("RGB", (100, 100), color="blue")

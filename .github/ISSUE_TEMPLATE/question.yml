@@ -1,0 +1,70 @@
+name: New question submission
+description: Submit a candidate question for the dataset
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to propose a new question. Each criterion in `docs/methodology.md` will be checked before merging.
+
+  - type: input
+    id: source-url
+    attributes:
+      label: Source URL
+      description: YouTube URL (with timestamp) for the frame.
+      placeholder: "https://www.youtube.com/watch?v=EXAMPLE&t=83s"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: license-type
+    attributes:
+      label: License type
+      description: How is this source licensed?
+      options:
+        - cc_by
+        - cc_by_sa
+        - permissioned
+    validations:
+      required: true
+
+  - type: textarea
+    id: concept
+    attributes:
+      label: Concept being tested
+      description: The teaching from the video, close to the instructor's own words.
+      placeholder: "When the opponent posts their hand on the mat, switching to the omoplata creates the angle."
+    validations:
+      required: true
+
+  - type: textarea
+    id: frame-description
+    attributes:
+      label: Frame description
+      description: What is visible in the still frame? Describe position, roles, and the key detail.
+    validations:
+      required: true
+
+  - type: textarea
+    id: draft-question
+    attributes:
+      label: Draft question and choices
+      description: Include stem, four options (A-D), and the correct answer letter.
+      placeholder: |
+        **Stem**: When your opponent reacts by posting their hand, you finish by ...
+
+        A) driving your knee into their hip
+        B) switching your angle to attack the omoplata
+        C) pulling their sleeve across your body
+        D) flattening them with your chest pressure
+
+        **Answer**: B
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: methodology-check
+    attributes:
+      label: Methodology self-check
+      options:
+        - label: "I have read `docs/methodology.md` and verified my draft against each criterion"

@@ -53,17 +53,25 @@ select = ["ALL"]
 "tests/**/*.py" = [
     "ANN",    # type annotations not required in tests
     "S101",   # assert-used
+    "D102",   # missing docstring in public method
     "D401",   # docstring imperative mood - fixtures describe what they return
-    "PLC0415",# import not at top level - needed for env var setup
-    "ARG002", # unused method argument - pytest fixtures injected by framework
+    "PLR2004",# magic value comparison - acceptable in test assertions
+    "PLC0415",# import not at top level - needed for post-env-var imports
+    "ARG002", # unused method argument - pytest fixtures and @patch args
 ]
 "src/bjj_vqa/cli.py" = [
     "T201",   # print-used - CLI uses print for output
+    "TC001",  # SampleRecord used at runtime (model_validate calls)
 ]
 "scripts/**/*.py" = [
     "INP001", # implicit namespace package - scripts are standalone
     "T201",   # print-used - scripts output to stdout
     "PLR2004",# magic value comparison - acceptable for simple scripts
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "vision: requires a live model API key; run with -m vision",
 ]
 
 [tool.ty.environment]
