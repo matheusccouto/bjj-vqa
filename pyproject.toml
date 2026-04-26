@@ -20,7 +20,6 @@ dependencies = [
     "datasets>=2.14.0",
     "pillow>=10.0.0",
     "pydantic>=2.0.0",
-    "anthropic>=0.40.0",
 ]
 
 [project.scripts]
@@ -33,7 +32,6 @@ dev = [
 ]
 test = [
     "pytest>=8.0.0",
-    "pytest-mock>=3.12",
 ]
 lint = [
     "ruff>=0.9.0",
@@ -55,23 +53,15 @@ select = ["ALL"]
 "tests/**/*.py" = [
     "ANN",    # type annotations not required in tests
     "S101",   # assert-used
-    "D102",   # missing docstring in public method - not required in tests
+    "D102",   # missing docstring in public method
     "D401",   # docstring imperative mood - fixtures describe what they return
-    "FBT001", # boolean positional arg - acceptable in test helpers
-    "FBT003", # boolean positional value - acceptable in test assertions
     "PLR2004",# magic value comparison - acceptable in test assertions
-    "PLC0415",# import not at top level - needed for env var setup
-    "ARG002", # unused method argument - pytest fixtures injected by framework
-    "E402",   # module-level import not at top - needed after sys.path manipulation
+    "PLC0415",# import not at top level - needed for post-env-var imports
+    "ARG002", # unused method argument - pytest fixtures and @patch args
 ]
 "src/bjj_vqa/cli.py" = [
     "T201",   # print-used - CLI uses print for output
-    "PLC0415",# deferred import of rubric to avoid loading anthropic at module start
     "TC001",  # SampleRecord used at runtime (model_validate calls)
-]
-"src/bjj_vqa/rubric.py" = [
-    "T201",   # print-used - rubric uses print for error messages
-    "TC001",  # SampleRecord annotation is fine with from __future__ import annotations
 ]
 "scripts/**/*.py" = [
     "INP001", # implicit namespace package - scripts are standalone

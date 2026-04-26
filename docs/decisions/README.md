@@ -32,11 +32,4 @@ What becomes easier, harder, or different as a result.
 - Changing the schema in a way that affects existing records
 - Any decision that a future contributor would wonder "why did they do it this way?"
 
-## Index
-
-- [0001](0001-eval-framework-inspect-ai.md) — Evaluation framework: inspect-ai
-- [0002](0002-dataset-license-cc-by-sa.md) — Dataset license: CC-BY-SA 4.0
-- [0003](0003-code-license-gpl3.md) — Code license: GPL-3.0
-- [0004](0004-schema-validation-pydantic.md) — Schema validation: Pydantic v2
-- [0005](0005-evaluation-via-openrouter.md) — CI inference backend: OpenRouter
-- [0006](0006-question-construction-methodology.md) — Question construction methodology
+See the `NNNN-*.md` files in this directory; each ADR title is its filename.

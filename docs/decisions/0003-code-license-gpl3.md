@@ -4,7 +4,7 @@
 
 ## Context
 
-The repository contains both a dataset (CC BY-SA 4.0) and Python code for validation, evaluation, and tooling (CLI, rubric, scripts). The code license needs to be chosen independently of the dataset license.
+The repository contains both a dataset (CC BY-SA 4.0) and Python code for validation, evaluation, and tooling (CLI, scripts). The code license needs to be chosen independently of the dataset license.
 
 Options considered: MIT, Apache-2.0, GPL-3.0.
 

@@ -8,18 +8,16 @@ BJJ-VQA is a Visual Question Answering benchmark for Brazilian Jiu-Jitsu, intend
 src/bjj_vqa/
   schema.py       — Pydantic models: SampleRecord, Source, and type aliases
   task.py         — inspect-ai task definitions (bjj_vqa, bjj_vqa_no_images)
-  cli.py          — CLI entry point: validate, validate-sources, rubric, publish
-  rubric.py       — Seven-criterion adversarial rubric (Anthropic API)
+  cli.py          — CLI entry point: validate, validate-sources, publish
 
 tests/
   test_schema.py  — Schema validation unit tests
   test_task.py    — inspect-ai task construction tests
   test_cli.py     — CLI integration tests
-  test_rubric.py  — Rubric tests (T7 deterministic, T1-T6 mocked)
   test_vision_pipeline.py — Vision pipeline smoke tests (marked "vision")
 
 data/
-  samples.json    — 57 VQA questions (source of truth)
+  samples.json    — VQA questions (source of truth)
   images/         — JPEG frames committed to git (5-digit IDs)
 
 sources/
@@ -28,14 +26,11 @@ sources/
 docs/
   methodology.md  — Canonical question construction methodology
   architecture.md — Eval flow, HF integration, data structure
-  glossary.md     — VQA and BJJ terminology
   decisions/      — Architecture Decision Records (ADRs)
   research/       — Investigation notes (YYYY-MM-DD_<topic>.md)
-  rubric-report.md — Generated artifact (gitignored); run `bjj-vqa rubric --all`
 
 prompts/
   generate.md     — Canonical question generation prompt (used with Gemini)
-  rubric/         — Per-criterion LLM prompts for the adversarial rubric
 
 scripts/
   no_image_report.py  — Aggregate no-images eval log into stem-leak report
@@ -64,8 +59,6 @@ uv run ruff format --check .     # check formatting
 uv run ty check                  # static type check
 uv run bjj-vqa validate          # validate samples.json schema + image paths + sources
 uv run bjj-vqa validate-sources  # validate sources/registry.jsonl cross-references
-uv run bjj-vqa rubric <id>       # run seven-criterion rubric on one question
-uv run bjj-vqa rubric --all      # run rubric on all questions → docs/rubric-report.md
 uv run inspect eval src/bjj_vqa/task.py --model <model_id>  # run full eval
 uv run inspect eval src/bjj_vqa/task.py@bjj_vqa_no_images --model <model_id>
 ```
@@ -88,12 +81,11 @@ Use plan mode in Claude Code for any task that touches multiple files or is tied
 Frames must come from CC-licensed sources or sources with explicit creator permission.
 Update `sources/registry.jsonl` with the source's licensing before adding questions.
 Run `uv run bjj-vqa validate` to check schema and image paths.
-Run `uv run bjj-vqa rubric <id>` and confirm all seven criteria pass before submitting.
 Read `docs/methodology.md` to understand what makes a question valid.
 </important>
 
 <important if="you are modifying the schema (src/bjj_vqa/schema.py)">
-Schema changes require backward-compatible defaults so existing 57 questions remain valid.
+Schema changes require backward-compatible defaults so existing questions remain valid.
 Update `tests/test_schema.py` to cover new fields.
 If adding a new required field, migrate all existing records in `data/samples.json` first.
 Document the decision in a new ADR under `docs/decisions/`.
@@ -108,8 +100,8 @@ Run `uv sync --locked` after adding; update `uv.lock` by running `uv sync`.
 <important if="you are writing or modifying tests">
 Unit tests live in `tests/`. Tests requiring live API keys must be marked `@pytest.mark.vision`.
 The `eval-test.yml` CI workflow runs a one-question smoke eval on every push to main.
-Do not add API calls to unmarked tests — CI has no ANTHROPIC_API_KEY by default.
-Mock Anthropic responses using `pytest-mock` (already in dev deps).
+Do not add API calls to unmarked tests — CI has no API keys by default.
+Avoid mocking unless the collaborating code is at a true system boundary (file system at an uncontrollable path, external HTTP call).
 </important>
 
 <important if="you are touching anything that affects HuggingFace Community Evals integration">
@@ -117,13 +109,6 @@ Mock Anthropic responses using `pytest-mock` (already in dev deps).
 The dataset card frontmatter in `README.md` must remain conformant with HF dataset card format.
 Eval results belong in `.eval_results/` inside the model's own HF repo, not this dataset repo.
 Verify with the HF docs links in the References section below.
-</important>
-
-<important if="you are implementing a GitHub issue">
-Read the issue body and locate the files declared in scope.
-Only touch files within that declared scope.
-If a necessary change is outside scope, stop and ask the user before expanding.
-Cross-check your file list before opening a PR.
 </important>
 
 ## References

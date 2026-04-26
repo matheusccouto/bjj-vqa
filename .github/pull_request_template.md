@@ -8,5 +8,5 @@ Closes #
 <!-- Delete this section if not adding/modifying questions. -->
 - [ ] Frame source has documented license in sources/registry.jsonl
 - [ ] Question passes `uv run bjj-vqa validate`
-- [ ] Question passes the seven-criterion rubric (`uv run bjj-vqa rubric <id>`)
+- [ ] Question reviewed against all criteria in `docs/methodology.md`
 - [ ] No-image accuracy verified manually or via existing baseline

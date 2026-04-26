@@ -47,25 +47,7 @@ sources/
   registry.jsonl        — one Source object per line; machine-readable attribution
 ```
 
-`SampleRecord` fields (see `src/bjj_vqa/schema.py` for full spec):
-
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| id | str | yes | 5-digit zero-padded |
-| image | str or list[str] | yes | relative path(s) from data/ |
-| question | str | yes | question stem |
-| choices | list[str] | yes | 2-4 options |
-| answer | A/B/C/D | yes | correct option letter |
-| experience_level | beginner/intermediate/advanced | yes | |
-| category | gi/no_gi | yes | |
-| subject | guard/passing/submissions/controls/escapes/takedowns | yes | |
-| source | str | yes | YouTube URL with timestamp |
-| stem_type | COMPLETION/CLASSIFICATION or null | no | methodology metadata |
-| option_types | dict[letter, type] or null | no | methodology metadata |
-| concept | str or null | no | teaching being tested |
-| source_license | license type or null | no | for questions with known license |
-| is_unanswerable | bool | no | default false |
-| language | en/pt-br | no | default en |
+See `src/bjj_vqa/schema.py` for the full `SampleRecord` and `Source` field specs.
 
 ## Out of scope
 

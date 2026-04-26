@@ -15,7 +15,7 @@ Formalize the construction process as a written methodology document: `docs/meth
 - Frame selection criteria
 - Two stem formats (COMPLETION, CLASSIFICATION)
 - Four option types (CORRECT, WRONG-CONTEXT, WRONG-MECHANISM, WRONG-DIRECTION)
-- The seven-criterion adversarial rubric (T1-T7), implemented as `uv run bjj-vqa rubric <id>`
+- Seven quality criteria (T1-T7) for manual review before acceptance
 - Metadata requirements
 - Dataset-level balance targets
 
@@ -23,7 +23,5 @@ This document is the canonical reference for all question contribution decisions
 
 ## Consequences
 
-- New questions must pass all seven rubric criteria before being accepted
-- The rubric is implemented in `src/bjj_vqa/rubric.py` and requires an `ANTHROPIC_API_KEY`
-- Existing 57 questions predate the formalized methodology; a follow-up effort will audit them against the rubric
+- New questions must satisfy all seven criteria (manual curator review) before being accepted
 - The generation prompt in `prompts/generate.md` is part of the methodology; changes to it should accompany updates to `docs/methodology.md`

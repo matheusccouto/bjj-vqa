@@ -23,17 +23,6 @@ body:
     validations:
       required: true
 
-  - type: textarea
-    id: files-owned
-    attributes:
-      label: Files owned
-      description: Which files or directories should be in scope for this work?
-      value: |
-        src/bjj_vqa/
-        tests/
-    validations:
-      required: false
-
   - type: checkboxes
     id: acceptance
     attributes:

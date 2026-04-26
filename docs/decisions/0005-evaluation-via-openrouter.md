@@ -21,4 +21,3 @@ Use OpenRouter as the primary inference backend for CI. Reasons:
 
 - CI requires one secret: `OPENROUTER_API_KEY`
 - Researchers who want to run evals against models not on OpenRouter can use their provider's API key directly with the appropriate inspect-ai provider
-- The rubric subcommand (`bjj-vqa rubric`) uses the Anthropic API directly (separate key) because it requires specific Claude reasoning capabilities not well-served by routing

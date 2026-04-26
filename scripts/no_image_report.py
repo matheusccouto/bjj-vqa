@@ -112,8 +112,8 @@ def main() -> None:
     lines.append("")
     lines.append("---")
     lines.append(
-        "_Run `uv run bjj-vqa rubric <id>` on each candidate to determine "
-        "whether it is a true stem leak or a coincidental correct guess._",
+        "_Review each candidate against the T1 and T4 criteria in "
+        "`docs/methodology.md` to determine whether the question needs rewriting._",
     )
 
     print("\n".join(lines))

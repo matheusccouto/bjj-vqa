@@ -29,7 +29,7 @@ Each question presents a still frame from a CC-licensed instructional video and 
 
 ## Methodology
 
-Questions are constructed using a structured, rubric-driven process: source selection (CC-licensed videos), concept extraction, frame selection, question construction (two stem formats, four option types), and validation against a seven-criterion adversarial rubric. The correct answer to every question requires both the image and BJJ domain knowledge.
+Questions are constructed using a structured methodology: source selection (CC-licensed videos), concept extraction, frame selection, question construction (two stem formats, four option types), and validation against seven quality criteria. The correct answer to every question requires both the image and BJJ domain knowledge.
 
 See [docs/methodology.md](docs/methodology.md) for the full construction methodology.
 
@@ -128,11 +128,7 @@ Allowed values: `experience_level` → `beginner / intermediate / advanced` · `
 5. Paste the output to Claude Code with: "Implement these questions into `data/samples.json`"
 6. Manually extract frames at the given timestamps using a screenshot tool and save to `data/images/`
 
-Run the seven-criterion rubric on your draft before opening a PR:
-
-```bash
-uv run bjj-vqa rubric <id>
-```
+Review your draft against the criteria in `docs/methodology.md` before opening a PR.
 
 ## Sources
 
@@ -153,7 +149,7 @@ All frames are extracted from Creative Commons licensed YouTube videos. See [ATT
 
 **Interpret accuracy carefully**: Categories with <5 questions are not statistically significant. Per-category accuracy should be interpreted with sample size in mind.
 
-**Rubric conformance**: The existing 57 questions predate the formalized seven-criterion adversarial rubric. Subsequent work will audit them; some questions may be revised or replaced as a result.
+**Methodology conformance**: Questions added before the methodology was formalized have not been audited against all criteria. Some may be revised or replaced as a result of future review.
 
 ## Citation
 

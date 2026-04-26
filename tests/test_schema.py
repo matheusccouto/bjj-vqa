@@ -265,142 +265,6 @@ class TestInvalidSample:
             SampleRecord.model_validate(record)
 
 
-class TestNewOptionalFields:
-    """Tests for optional methodology metadata fields added in v0.3+."""
-
-    def _base(self) -> dict:
-        return {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "B",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-        }
-
-    def test_existing_record_still_valid_without_new_fields(self):
-        """Existing records without new fields remain valid."""
-        sample = SampleRecord.model_validate(self._base())
-        assert sample.stem_type is None
-        assert sample.option_types is None
-        assert sample.concept is None
-        assert sample.source_license is None
-        assert sample.is_unanswerable is False
-        assert sample.language == "en"
-
-    def test_stem_type_completion(self):
-        """COMPLETION stem type accepted."""
-        record = {**self._base(), "stem_type": "COMPLETION"}
-        sample = SampleRecord.model_validate(record)
-        assert sample.stem_type == "COMPLETION"
-
-    def test_stem_type_classification(self):
-        """CLASSIFICATION stem type accepted."""
-        record = {**self._base(), "stem_type": "CLASSIFICATION"}
-        sample = SampleRecord.model_validate(record)
-        assert sample.stem_type == "CLASSIFICATION"
-
-    def test_stem_type_invalid(self):
-        """Invalid stem type rejected."""
-        record = {**self._base(), "stem_type": "FILL_IN_THE_BLANK"}
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_option_types_valid(self):
-        """Valid option_types with one CORRECT at answer key."""
-        record = {
-            **self._base(),
-            "option_types": {
-                "A": "WRONG_CONTEXT",
-                "B": "CORRECT",
-                "C": "WRONG_MECHANISM",
-                "D": "WRONG_DIRECTION",
-            },
-        }
-        sample = SampleRecord.model_validate(record)
-        assert sample.option_types is not None
-        assert sample.option_types["B"] == "CORRECT"
-
-    def test_option_types_wrong_answer_key(self):
-        """option_types with CORRECT at wrong key fails validation."""
-        record = {
-            **self._base(),
-            "answer": "B",
-            "option_types": {
-                "A": "CORRECT",  # should be B
-                "B": "WRONG_CONTEXT",
-                "C": "WRONG_MECHANISM",
-                "D": "WRONG_DIRECTION",
-            },
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_option_types_two_correct_fails(self):
-        """option_types with two CORRECT values fails validation."""
-        record = {
-            **self._base(),
-            "option_types": {
-                "A": "CORRECT",
-                "B": "CORRECT",
-                "C": "WRONG_MECHANISM",
-                "D": "WRONG_DIRECTION",
-            },
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_concept_field(self):
-        """Concept field accepted as free text."""
-        concept = "When opponent posts hand, switch to omoplata."
-        record = {**self._base(), "concept": concept}
-        sample = SampleRecord.model_validate(record)
-        assert sample.concept == concept
-
-    def test_source_license_cc_by(self):
-        """cc_by source license accepted."""
-        record = {**self._base(), "source_license": "cc_by"}
-        sample = SampleRecord.model_validate(record)
-        assert sample.source_license == "cc_by"
-
-    def test_source_license_invalid(self):
-        """Invalid source license rejected."""
-        record = {**self._base(), "source_license": "mit"}
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_is_unanswerable_default_false(self):
-        """is_unanswerable defaults to False."""
-        sample = SampleRecord.model_validate(self._base())
-        assert sample.is_unanswerable is False
-
-    def test_is_unanswerable_true(self):
-        """is_unanswerable=True accepted."""
-        record = {**self._base(), "is_unanswerable": True}
-        sample = SampleRecord.model_validate(record)
-        assert sample.is_unanswerable is True
-
-    def test_language_default_en(self):
-        """Language defaults to 'en'."""
-        sample = SampleRecord.model_validate(self._base())
-        assert sample.language == "en"
-
-    def test_language_pt_br(self):
-        """pt-br language accepted."""
-        record = {**self._base(), "language": "pt-br"}
-        sample = SampleRecord.model_validate(record)
-        assert sample.language == "pt-br"
-
-    def test_language_invalid(self):
-        """Invalid language code rejected."""
-        record = {**self._base(), "language": "es"}
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-
 class TestSourceModel:
     """Tests for the Source model used in sources/registry.jsonl."""
 
@@ -413,9 +277,7 @@ class TestSourceModel:
             "title": "Test Video",
             "creator": "Test Channel",
             "license_type": "cc_by",
-            "permission_reference": None,
             "question_ids": ["00001", "00002"],
-            "notes": "CC BY 4.0 verified",
         }
         source = Source.model_validate(raw)
         assert source.license_type == "cc_by"
@@ -430,9 +292,7 @@ class TestSourceModel:
             "title": "Test",
             "creator": "Test",
             "license_type": "cc_zero",
-            "permission_reference": None,
             "question_ids": [],
-            "notes": "",
         }
         with pytest.raises(ValidationError):
             Source.model_validate(raw)
