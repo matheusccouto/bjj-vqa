@@ -1,5 +1,3 @@
-# AGENTS.md -- bjj-vqa
-
 BJJ Visual Question Answering benchmark. HuggingFace datasets, inspect-ai eval harness, methodology checklist.
 
 ## Stack
@@ -12,8 +10,7 @@ Validate: `uv run bjj-vqa validate`.
 2. Never commit `data/` contents -- use DVC.
 3. Every new task family gets a methodology checklist entry FIRST.
 4. Schema changes must be backward-compatible.
-5. Never push to `main`. Never delete a failing test.
-6. No code style rules here -- ruff enforces them.
+5. Never delete a failing test.
 
 <important if="you are adding or modifying a question">
 Read `docs/methodology.md`. Update `sources/registry.jsonl`. Run `uv run bjj-vqa validate`.
@@ -30,3 +27,16 @@ Tests in `tests/`. API-key tests marked `@pytest.mark.vision`. No API calls in u
 <important if="you are touching HuggingFace integration">
 `eval.yaml` must stay valid. README frontmatter must stay conformant. Do not modify without checking HF Community Evals spec.
 </important>
+
+## References
+Fetch the `llms.txt` before making assumptions about tool APIs or CLI flags:
+
+| Tool | llms.txt |
+|---|---|
+| uv | https://docs.astral.sh/uv/llms.txt |
+| ruff | https://docs.astral.sh/ruff/llms.txt |
+| ty | https://docs.astral.sh/ty/llms.txt |
+| Pydantic | https://docs.pydantic.dev/latest/llms.txt |
+| inspect-ai | https://inspect.aisi.org.uk/ |
+
+No `llms.txt` -- use docs root: [HuggingFace Community Evals](https://huggingface.co/blog/community-evals) | [HuggingFace eval-results](https://huggingface.co/docs/hub/eval-results) | [HuggingFace Hub](https://huggingface.co/docs/hub/llms.txt)
