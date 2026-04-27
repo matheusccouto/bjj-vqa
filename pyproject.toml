@@ -24,11 +24,16 @@ dependencies = [
 
 [project.scripts]
 bjj-vqa = "bjj_vqa.cli:main"
+bjj-vqa-demo = "app.eval_demo:main"
 
 [dependency-groups]
 dev = [
     {include-group = "test"},
     {include-group = "lint"},
+]
+demo = [
+    "gradio>=5.0.0",
+    "pillow>=10.0.0",
 ]
 test = [
     "pytest>=8.0.0",
@@ -67,6 +72,12 @@ select = ["ALL"]
     "INP001", # implicit namespace package - scripts are standalone
     "T201",   # print-used - scripts output to stdout
     "PLR2004",# magic value comparison - acceptable for simple scripts
+]
+"app/**/*.py" = [
+    "INP001", # implicit namespace package - app is standalone demo
+    "PTH123", # open() acceptable in demo app
+    "D103",   # docstrings not required in demo
+    "SIM108", # if-else clearer for gradio callback type handling
 ]
 
 [tool.pytest.ini_options]
