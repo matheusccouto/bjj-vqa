@@ -34,6 +34,4 @@ Tests in `tests/`. API-key tests marked `@pytest.mark.vision`. No API calls in u
 - ty: https://docs.astral.sh/ty/llms.txt
 - Pydantic: https://docs.pydantic.dev/latest/llms.txt
 - inspect-ai: https://inspect.aisi.org.uk/llms.txt
-- HuggingFace Hub: https://huggingface.co/docs/hub/llms.txt
-- HuggingFace Community Evals: https://huggingface.co/blog/community-evals
-- HuggingFace eval-results: https://huggingface.co/docs/hub/eval-results
+- HuggingFace: https://huggingface.co/docs/hub/llms.txt
