@@ -12,7 +12,7 @@ import pytest
 from inspect_ai import eval as inspect_eval
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
-from verify_vision import QUESTIONS, build_task
+from verify_vision import QUESTIONS, build_task  # ty: ignore[unresolved-import]
 
 MODEL = "openrouter/google/gemma-4-31b-it"
 
@@ -29,6 +29,7 @@ def test_images_are_processed_by_model(tmp_path):
 
     assert logs, "Eval returned no results"
     assert logs[0].status != "error", "Eval did not complete successfully"
+    assert logs[0].results is not None, "Eval returned no results"
     accuracy = logs[0].results.scores[0].metrics["accuracy"].value
     n = len(QUESTIONS)
     assert accuracy == 1.0, (
