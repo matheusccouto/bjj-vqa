@@ -10,6 +10,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from datasets import Dataset, DatasetDict
+from huggingface_hub import HfApi
 from huggingface_hub.utils import HfHubHTTPError
 from PIL import Image
 from pydantic import ValidationError
@@ -241,6 +242,25 @@ def publish(repo: str, tag: str) -> None:
         print(f"  {e}")
         print("Hint: Check HF_TOKEN has write access to repo")
         sys.exit(1)
+
+    # Upload eval.yaml for HuggingFace Community Evals registration
+    project_root = Path(__file__).parent.parent.parent
+    eval_yaml_path = project_root / "eval.yaml"
+    if eval_yaml_path.exists():
+        try:
+            api = HfApi()
+            api.upload_file(
+                path_or_fileobj=str(eval_yaml_path),
+                path_in_repo="eval.yaml",
+                repo_id=repo,
+                repo_type="dataset",
+                token=token,
+                commit_message=f"Add eval.yaml for Community Evals (Release {tag})",
+            )
+            print("Uploaded eval.yaml for Community Evals registration")
+        except HfHubHTTPError as e:
+            print(f"WARNING: Failed to upload eval.yaml: {e}")
+            print("Continuing — dataset was published successfully")
 
     print(f"Published {len(records)} records to {repo}")
     print(f"https://huggingface.co/datasets/{repo}")
