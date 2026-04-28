@@ -47,7 +47,7 @@ def main(model_id: str, accuracy: float, run_url: str) -> None:
 
     yaml_content = f"""- dataset:
     id: couto/bjj-vqa
-    task_id: default
+    task_id: bjj_vqa
   value: {accuracy}
   date: "{os.environ["EVAL_DATE"]}"
   source:
