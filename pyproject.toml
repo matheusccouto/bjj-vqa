@@ -68,6 +68,20 @@ select = ["ALL"]
     "T201",   # print-used - scripts output to stdout
     "PLR2004",# magic value comparison - acceptable for simple scripts
 ]
+"demo/**/*.py" = [
+    "INP001", # implicit namespace package — demo is standalone
+    "T201",   # print-used — generate_placeholder outputs to stdout
+    "D103",   # missing docstring — Gradio callbacks don't need docstrings
+    "S311",   # random.random — placeholder data generation only
+    "RUF001", # ambiguous unicode — markdown emoji in About tab
+    "F841",   # unused variable — Gradio Blocks components
+    "PERF401",# list.extend — readability in leaderboard building
+    "PTH123", # Path.open — readability in demo code
+    "PTH110", # os.path.exists — readability in demo code
+    "COM812", # trailing comma — markdown strings
+    "E501",   # line too long — markdown strings and model configs
+    "PLR0913",# too many arguments — simulate_model has fixed signature
+]
 
 [tool.pytest.ini_options]
 markers = [
