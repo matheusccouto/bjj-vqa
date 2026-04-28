@@ -55,6 +55,28 @@ def main() -> None:
     publish_cmd.add_argument("--tag", required=True, help="Release tag")
     publish_cmd.set_defaults(func=lambda a: publish(a.repo, a.tag))
 
+    demo_cmd = subparsers.add_parser("demo", help="Launch the evaluation demo app")
+    demo_cmd.add_argument(
+        "--results",
+        type=Path,
+        default=None,
+        help="Path to eval results JSON",
+    )
+    demo_cmd.add_argument(
+        "--port",
+        type=int,
+        default=7860,
+        help="Port to listen on",
+    )
+    demo_cmd.add_argument(
+        "--share",
+        action="store_true",
+        help="Create a public share link",
+    )
+    demo_cmd.set_defaults(
+        func=lambda a: run_demo(a.results, a.port, a.share),
+    )
+
     args = parser.parse_args()
     args.func(args)
 
@@ -254,3 +276,15 @@ def _require_env(name: str) -> str:
         print("Hint: Set it in your shell or .env file")
         sys.exit(1)
     return val
+
+
+def run_demo(results: Path | None, port: int, share: bool) -> None:
+    try:
+        from bjj_vqa.demo.app import create_demo
+    except ImportError:
+        print("ERROR: gradio is not installed.")
+        print("Hint: install with 'pip install gradio' or 'uv sync'")
+        sys.exit(1)
+    demo = create_demo(results)
+    print(f"Starting BJJ-VQA demo on http://localhost:{port}")
+    demo.launch(server_port=port, share=share)

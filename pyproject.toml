@@ -20,6 +20,7 @@ dependencies = [
     "datasets>=2.14.0",
     "pillow>=10.0.0",
     "pydantic>=2.0.0",
+    "gradio>=4.0.0",
 ]
 
 [project.scripts]
@@ -62,6 +63,19 @@ select = ["ALL"]
 "src/bjj_vqa/cli.py" = [
     "T201",   # print-used - CLI uses print for output
     "TC001",  # SampleRecord used at runtime (model_validate calls)
+    "FBT001", # boolean arg in CLI handlers
+    "PLC0415",# lazy import to avoid requiring gradio
+    "D103",   # missing docstring in public function (argparse handlers)
+]
+"src/bjj_vqa/demo/**/*.py" = [
+    "T201",   # print-used - demo may use print
+    "ANN",    # type annotations in demo are optional
+    "D",      # docstrings optional in demo
+    "PLR2004",# magic values in demo
+    "ARG001", # unused function args for Gradio callbacks
+    "SLF001", # private member access for demo internals
+    "S311",   # pseudo-random is fine for placeholder data
+    "SIM401", # dict.get with default conflicts with ty overload check
 ]
 "scripts/**/*.py" = [
     "INP001", # implicit namespace package - scripts are standalone
