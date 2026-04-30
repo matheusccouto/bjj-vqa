@@ -26,6 +26,7 @@ def test_images_are_processed_by_model(tmp_path):
 
     assert logs, "Eval returned no results"
     assert logs[0].status != "error", "Eval did not complete successfully"
+    assert logs[0].results is not None, "Eval returned no results"
     accuracy = logs[0].results.scores[0].metrics["accuracy"].value
     n = len(QUESTIONS)
     assert accuracy == 1.0, (

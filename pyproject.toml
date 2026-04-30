@@ -79,4 +79,4 @@ python = ".venv"
 root = ["./src"]
 
 [tool.ty.src]
-include = ["src", "tests"]
+include = ["src", "tests", "scripts"]
