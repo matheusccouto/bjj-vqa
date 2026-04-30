@@ -77,7 +77,7 @@ markers = [
 
 [tool.ty.environment]
 python = ".venv"
-root = ["./src"]
+root = ["."]
 
 [tool.ty.src]
 include = ["src", "tests", "scripts"]
