@@ -4,20 +4,37 @@ This is the canonical prompt for generating candidate questions from CC-licensed
 
 ## Model recommendation
 
-**Primary model: Gemini 2.5 Flash** via Google AI Studio (free tier, ~1500 req/day).
+### Primary: Gemini 2.5 Flash via Google AI Studio (free tier)
 
 Rationale:
-- Native video understanding (reads full video, no frame extraction needed for input)
+- Native video understanding (reads full video, no frame extraction needed)
 - 1M token context window — handles long instructional videos
-- Free tier sufficient for dataset construction volumes
-- Competitive quality on visual reasoning benchmarks
+- Free tier: ~1.5M tokens/day, sufficient for dataset construction volumes
+- $0.30/1M input tokens on paid tier if free quota is exceeded
 
-Alternatives considered:
-- **Gemini 2.5 Pro**: Higher quality but no free video tier; costs ~$1.25/video. Not justified for generation that will be manually reviewed anyway.
-- **GPT-4o**: Good image reasoning but requires manual frame extraction for video (no native video API at free tier). Adds pipeline complexity without quality upside for this task.
-- **Claude Sonnet 4**: Excellent reasoning but no video input; would require frame-level prompting only. Loses temporal context.
+### Secondary: Gemini 2.5 Pro via Google AI Pro subscription
 
-Stick with Gemini 2.5 Flash until a model with demonstrably better video-BJJ reasoning becomes available at comparable cost.
+Use when Flash produces low-quality output that requires heavy manual correction:
+- Higher reasoning quality on nuanced BJJ concepts
+- 100 queries/day on AI Pro plan (resets every 24h)
+- $1.25/1M input tokens on paid tier
+- Same 1M context window and native video support
+
+Best used selectively — review a batch of Flash output, then use Pro only
+for videos where Flash underperforms.
+
+### Alternative: Qwen3.5-Plus (vision) via Alibaba Cloud
+
+- Native video understanding up to 2 hours
+- Strong visual reasoning (Video-MME score 84.5 on 9B variant)
+- Available via Alibaba Cloud Model Studio API
+- Use if Google quota is exhausted or for comparison runs
+
+### Not suitable for this task
+
+- **OpenCode Go models** (GLM-5, Kimi K2.5, Qwen3.5 Plus, etc.): Text-only coding
+  models. No native video input. Would require frame extraction, losing temporal context.
+  Use these only for code-related tasks in this repo.
 
 ---
 
