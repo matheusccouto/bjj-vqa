@@ -13,6 +13,7 @@ Usage:
 import argparse
 import sys
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
 
 from inspect_ai import Task
@@ -63,7 +64,7 @@ def _shape_image(shape: str, size: int = 256) -> Image.Image:
     return img
 
 
-IMAGE_FACTORIES: dict[str, callable] = {
+IMAGE_FACTORIES: dict[str, Callable] = {
     "letter_x": lambda: _text_image("X"),
     "letter_o": lambda: _text_image("O"),
     "digit_3": lambda: _text_image("3"),
@@ -144,6 +145,7 @@ def main() -> None:
         sys.exit(1)
 
     results = logs[0].results
+    assert results is not None, "Eval returned no results"
     accuracy = results.scores[0].metrics["accuracy"].value
     n = len(QUESTIONS)
     n_correct = round(accuracy * n)
