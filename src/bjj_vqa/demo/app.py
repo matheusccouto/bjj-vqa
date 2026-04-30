@@ -7,9 +7,9 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import base64
 import io
-import argparse
 from pathlib import Path
 
 import gradio as gr  # type: ignore[import-untyped]
@@ -407,7 +407,7 @@ def create_demo(results_path: Path | str | None = None) -> gr.Blocks:
                 )
 
             # ── About Tab ──
-            with gr.TabItem("ℹ️ About"):
+            with gr.TabItem("About"):
                 gr.Markdown(
                     f"""### BJJ-VQA: Brazilian Jiu-Jitsu Visual Q&A Benchmark
 

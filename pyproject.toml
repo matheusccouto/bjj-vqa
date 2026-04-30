@@ -20,6 +20,10 @@ dependencies = [
     "datasets>=2.14.0",
     "pillow>=10.0.0",
     "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+demo = [
     "gradio>=4.0.0",
 ]
 
@@ -69,20 +73,15 @@ select = ["ALL"]
     "D103",   # missing docstring in public function (argparse handlers)
 ]
 "src/bjj_vqa/demo/**/*.py" = [
-    "INP001", # implicit namespace package — demo is a subpackage
-    "T201",   # print-used - demo may use print
-    "ANN",    # type annotations in demo are optional
-    "D",      # docstrings optional in demo
-    "PLR2004",# magic values in demo
+    "INP001", # implicit namespace package — demo subpackage
+    "T201",   # print-used in CLI argparse guard
+    "PLR2004",# magic values in UI styling
     "ARG001", # unused function args for Gradio callbacks
-    "SLF001", # private member access for demo internals
-    "S311",   # pseudo-random is fine for placeholder data
-    "SIM401", # dict.get with default conflicts with ty overload check
-    "RUF001", # ambiguous unicode — emoji in About tab
-    "FBT001", # boolean arg handling
-    "FBT002", # boolean default handling
+    "SIM401", # dict.get conflicts with ty overload check
+    "S311",   # pseudo-random is fine for placeholder demo data
+    "FBT001", # boolean arg in CLI handler
+    "FBT002", # boolean default arg in CLI handler
     "PLC0415",# import not at top level — argparse guard
-    "I001",   # import sorting — consistent with rest of project
 ]
 "scripts/**/*.py" = [
     "INP001", # implicit namespace package - scripts are standalone

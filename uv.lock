@@ -267,12 +267,16 @@ version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "datasets" },
-    { name = "gradio" },
     { name = "huggingface-hub" },
     { name = "inspect-ai" },
     { name = "openai" },
     { name = "pillow" },
     { name = "pydantic" },
+]
+
+[package.optional-dependencies]
+demo = [
+    { name = "gradio" },
 ]
 
 [package.dev-dependencies]
@@ -292,13 +296,14 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "datasets", specifier = ">=2.14.0" },
-    { name = "gradio", specifier = ">=4.0.0" },
+    { name = "gradio", marker = "extra == 'demo'", specifier = ">=4.0.0" },
     { name = "huggingface-hub", specifier = ">=0.20.0" },
     { name = "inspect-ai", specifier = ">=0.3.0" },
     { name = "openai", specifier = ">=1.0.0" },
     { name = "pillow", specifier = ">=10.0.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
 ]
+provides-extras = ["demo"]
 
 [package.metadata.requires-dev]
 dev = [

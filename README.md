@@ -54,6 +54,19 @@ uv run inspect view
 Any model supported by [inspect-ai](https://inspect.aisi.org.uk/providers.html)
 works. Evaluation results are stored in `.eval_results/` in the **model's** repository (not this dataset repo). See the [HuggingFace eval-results docs](https://huggingface.co/docs/hub/eval-results) for how to submit results.
 
+## Run the demo app
+
+The demo app shows how VLMs perform on BJJ-VQA with a leaderboard and question browser.
+
+```bash
+uv sync --extra demo
+uv run bjj-vqa demo              # Launch locally (default port 7860)
+uv run bjj-vqa demo --share      # Generate a public share link
+uv run bjj-vqa demo --results path/to/eval.json  # Load real eval results
+```
+
+Deploy free on [HuggingFace Spaces](https://huggingface.co/spaces) by pushing this repo to a Space with a `gradio` SDK.
+
 ## Dataset
 
 Questions from CC-licensed BJJ instructional videos. Gi and no-gi positions across all experience levels.
