@@ -87,6 +87,7 @@ select = ["ALL"]
     "INP001", # implicit namespace package - scripts are standalone
     "T201",   # print-used - scripts output to stdout
     "PLR2004",# magic value comparison - acceptable for simple scripts
+    "S101",   # assert-used - scripts use assert for validation
 ]
 
 [tool.pytest.ini_options]
