@@ -280,7 +280,11 @@ demo = [
 ]
 
 [package.dev-dependencies]
+demo = [
+    { name = "gradio" },
+]
 dev = [
+    { name = "gradio" },
     { name = "pytest" },
     { name = "ruff" },
     { name = "ty" },
@@ -306,7 +310,9 @@ requires-dist = [
 provides-extras = ["demo"]
 
 [package.metadata.requires-dev]
+demo = [{ name = "gradio", specifier = ">=4.0.0" }]
 dev = [
+    { name = "gradio", specifier = ">=4.0.0" },
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "ruff", specifier = ">=0.9.0" },
     { name = "ty", specifier = ">=0.0.1" },
