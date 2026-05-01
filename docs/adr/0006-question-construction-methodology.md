@@ -8,20 +8,20 @@ Early questions in the dataset were constructed informally, without a documented
 
 ## Decision
 
-Formalize the construction process as a written methodology document: `docs/methodology.md`. The methodology specifies:
+Formalize the construction process in `CONTEXT.md` (at the repo root). The methodology specifies:
 
 - Source selection and licensing requirements
 - Concept extraction and the "imageable" test
 - Frame selection criteria
 - Two stem formats (COMPLETION, CLASSIFICATION)
 - Four option types (CORRECT, WRONG-CONTEXT, WRONG-MECHANISM, WRONG-DIRECTION)
-- Seven quality criteria (T1-T7) for manual review before acceptance
+- Quality evals (STEM_LEAK, ROLE_COHERENCE, SINGLE_CORRECT, IMAGE_DEPENDENCY, IMAGE_CLARITY, BJJ_CORRECTNESS, FORMAT_COMPLIANCE)
 - Metadata requirements
 - Dataset-level balance targets
 
-This document is the canonical reference for all question contribution decisions.
+`CONTEXT.md` is the canonical reference for all question contribution decisions. The Gemini generation prompt in `src/bjj_vqa/generate/prompt.md` implements this methodology.
 
 ## Consequences
 
-- New questions must satisfy all seven criteria (manual curator review) before being accepted
-- The generation prompt in `prompts/generate.md` is part of the methodology; changes to it should accompany updates to `docs/methodology.md`
+- New questions must pass all quality evals before being accepted
+- Changes to the generation prompt should accompany updates to `CONTEXT.md`

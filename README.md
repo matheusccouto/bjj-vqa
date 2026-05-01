@@ -31,7 +31,7 @@ Each question presents a still frame from a CC-licensed instructional video and 
 
 Questions are constructed using a structured methodology: source selection (CC-licensed videos), concept extraction, frame selection, question construction (two stem formats, four option types), and validation against seven quality criteria. The correct answer to every question requires both the image and BJJ domain knowledge.
 
-See [docs/methodology.md](docs/methodology.md) for the full construction methodology.
+See [CONTEXT.md](CONTEXT.md) for the full construction methodology and quality criteria.
 
 ## For agents
 

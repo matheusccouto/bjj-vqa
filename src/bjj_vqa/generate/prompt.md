@@ -1,10 +1,9 @@
-# Question generation prompt
+# Gemini generation prompt
 
-This is the canonical prompt for generating candidate questions from CC-licensed BJJ instructional videos. It is used with a frontier vision-language model (e.g., Gemini) that can read video. Changes to this prompt should accompany updates to `docs/methodology.md`.
+This prompt will be rewritten for structured JSON output in the `bjj-vqa generate` implementation issue. The content below is the legacy freeform version preserved for reference.
 
 ---
 
-```markdown
 <role>
 You are an expert Brazilian Jiu-Jitsu black belt building a VQA benchmark dataset
 by watching instructional videos.
@@ -41,23 +40,6 @@ resort, only when X, never when Y, etc.).
 
 Options must read like short, confident coaching cues. Keep all four similar
 in length. No hedges. No "but", "although", or "however" inside options.
-
-<example type="completion">
-Q: When the forearm cuts across the front of the neck, the finish is mostly
-   done by
-A) rowing your elbow
-B) squeezing your hands
-C) driving your shoulder into their jaw
-D) dropping your hip toward the mat
-</example>
-
-<example type="classification">
-Q: Using your leg to bend their leg so you strip the grip is
-A) the first thing to try
-B) something to use when your arms alone cannot break it
-C) a setup for the knee cut, not a grip strip
-D) effective only after you have secured the underhook
-</example>
 </question_format>
 
 <option_types>
@@ -68,12 +50,9 @@ Each question needs exactly one of each:
 - WRONG-DIRECTION — correct mechanism stated, but the effect is reversed
 
 The correct answer must not be the longest option.
-Distribute answers evenly across A/B/C/D — no letter repeats consecutively,
-no letter appears more than ceil(K/2) times across all questions.
 </option_types>
 
 <phases>
-
 <phase id="1" name="concept extraction">
 List every distinct principle the instructor explicitly teaches.
 For each:
@@ -90,9 +69,9 @@ Mark unframeable concepts and drop them.
 </phase>
 
 <phase id="3" name="question count">
-Count remaining concepts. This is K.
-- Fewer than 2 → output "VIDEO TOO SHORT OR LOW DENSITY" and stop.
-- More than 8 → keep the 8 clearest. State drops in one word each.
+Count remaining concepts. This is K. Target 3-8 questions.
+- Fewer than 3 → output "VIDEO TOO SHORT OR LOW DENSITY" and stop.
+- More than 8 → keep the 8 clearest.
 State K.
 </phase>
 
@@ -100,51 +79,4 @@ State K.
 Write each question following the format and option types above.
 Ensure both COMPLETION and CLASSIFICATION appear at least once.
 </phase>
-
-<phase id="5" name="validation">
-For each question, check:
-T1 — Can a practitioner answer without the image, from the concept alone? FAIL if yes.
-T2 — Can someone answer by describing the image, without the concept? FAIL if yes.
-T3 — Is the correct answer the longest or most technical option? FAIL if yes.
-Rewrite any question that fails.
-</phase>
-
 </phases>
-
-<output_format>
-For each question:
-
-QUESTION [N of K]
-CONCEPT TESTED: [instructor's teaching in one line]
-STEM TYPE: [COMPLETION / CLASSIFICATION]
-TIMESTAMP: [HH:MM:SS]
-EXPERIENCE_LEVEL: [beginner / intermediate / advanced]
-CATEGORY: [gi / no_gi]
-SUBJECT: [guard / passing / submissions / controls / escapes / takedowns]
-SOURCE SECONDS: [integer]
-SOURCE URL: https://youtu.be/<VIDEO_ID>?t=<SECONDS>
-
-[question stem]
-
-A) [option]   [CORRECT / WRONG-CONTEXT / WRONG-MECHANISM / WRONG-DIRECTION]
-B) [option]   [type]
-C) [option]   [type]
-D) [option]   [type]
-
-ANSWER: [letter]
-VALIDATION: T1=[PASS/FAIL] T2=[PASS/FAIL] T3=[PASS/FAIL]
-
----
-
-After all K questions:
-
-CONCEPTS EXTRACTED: [N]
-UNFRAMEABLE: [list]
-K: [N]
-STEM TYPE distribution: [COMPLETION: N, CLASSIFICATION: N]
-SUBJECT distribution: [list]
-EXPERIENCE_LEVEL distribution: [list]
-Weakest question: [N — one sentence why]
-Gap for next video: [one sentence]
-</output_format>
-```

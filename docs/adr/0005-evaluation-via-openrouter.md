@@ -1,23 +1,24 @@
-# 0005: CI inference backend — OpenRouter
+# 0005: OpenRouter as primary inference provider
 
 **Status**: Accepted
 
 ## Context
 
-CI runs a one-question smoke eval on every push to main (`eval-test.yml`) and a full eval on workflow_dispatch (`eval-model.yml`). Both need to call a model API. The CI environment only supports a small number of secrets, so using one API key for all models is strongly preferred.
+All model calls in this project — benchmark evaluation in CI, question quality review in DeepEval evals, and question generation via Gemini Flash — need a model API. Using a single provider simplifies secrets management and keeps the codebase consistent.
 
-Alternatives: individual provider keys (Anthropic, Google, OpenAI, etc.), a self-hosted model.
+Alternatives considered: individual provider keys (Anthropic, Google, OpenAI), Google AI Studio SDK directly for Gemini.
 
 ## Decision
 
-Use OpenRouter as the primary inference backend for CI. Reasons:
+Use OpenRouter for all inference, including Gemini Flash question generation. Reasons:
 
-- Single `OPENROUTER_API_KEY` secret covers hundreds of models from all major providers
+- Single `OPENROUTER_API_KEY` secret covers all models including Gemini Flash
+- OpenRouter supports YouTube URL passthrough for Gemini models natively via the `file_data` parameter — no Google AI Studio SDK required
 - Compatible with inspect-ai's OpenAI-compatible provider interface
-- Model IDs are namespaced (`openrouter/<provider>/<model>`), making it easy to swap models in the eval command
-- The smoke eval uses `openrouter/google/gemma-4-31b-it` as a lightweight, low-cost default
+- Model IDs are namespaced (`openrouter/<provider>/<model>`), making model swaps trivial
 
 ## Consequences
 
-- CI requires one secret: `OPENROUTER_API_KEY`
-- Researchers who want to run evals against models not on OpenRouter can use their provider's API key directly with the appropriate inspect-ai provider
+- The entire project requires one secret: `OPENROUTER_API_KEY`
+- No Google AI Studio SDK dependency
+- Researchers running their own evals can use their provider's API key directly with the appropriate inspect-ai provider
