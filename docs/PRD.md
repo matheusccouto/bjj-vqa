@@ -2,131 +2,162 @@
 
 ## Problem Statement
 
-BJJ-VQA currently has 57 unreviewed test questions with known quality issues (stem leak, shallow reasoning, uniform patterns, wrong answers). The question generation process is ad-hoc — there is no automated pipeline to produce benchmark-quality questions. The existing issues were created without careful planning, and the dependency graph is messy. The benchmark needs a complete replanning from scratch to reach a v0.1 release with validated questions, evaluation results, a public demo, and HuggingFace discoverability.
+BJJ-VQA has 57 unreviewed questions with known quality issues: stem leak, shallow reasoning, and wrong answers. Question production is fully manual with no quality enforcement. The benchmark cannot be taken seriously until it has a repeatable, validated pipeline and a public-facing result.
 
 ## Solution
 
-Rebuild BJJ-VQA from scratch with an adversarial, automated question generation pipeline that produces ~80-100 validated questions via an orchestrated loop: Gemini 3 Flash processes full YouTube URLs in a single pass to generate questions, a different LLM reviews them against defined evals via inspect-ai's LLM-as-judge, and the loop continues until each question meets the quality threshold. All wrapped in an OpenCode skill triggered via GitHub Actions. The demo app, eval harness, and HF listing proceed in parallel tracks. The existing 57 questions are wiped — v0.1 starts from a clean slate with only validated questions.
+Rebuild BJJ-VQA from scratch with two parallel approaches to automated question generation, a DeepEval-powered quality gate, a Gradio leaderboard, and HuggingFace discoverability. The existing 57 questions are wiped. v0.1 ships only validated questions.
+
+**Track A — Simple pipeline:** trigger with a YouTube URL via `workflow_dispatch`. Gemini Flash generates structured questions and suggests timestamps. Frames are extracted and everything is committed directly to `data/`. A PR is opened. CI runs quality evals. Human reviews and merges.
+
+**Track B — Agentic loop:** an OpenCode agent (Qwen 3.6 Plus or any vision-capable model) orchestrates Gemini iteratively — calling `bjj-vqa generate`, running `bjj-vqa evals`, re-prompting with `--instructions` and `--previous` until questions pass or the retry limit is reached, then calling `bjj-vqa add` and opening a PR.
+
+Both tracks run in parallel. The maintainer reviews results and promotes whichever produces better questions.
 
 ## User Stories
 
-1. As a benchmark maintainer, I want to pass a YouTube URL to a pipeline and receive validated VQA questions, so that I can scale question production without manual effort
-2. As a benchmark maintainer, I want the pipeline to open a PR with new questions and their image frames, so that I can review and merge with a single click
-3. As a benchmark maintainer, I want each generated question to be scored against defined evals by an adversarial reviewer LLM, so that quality is enforced before any question reaches the dataset
-4. As a benchmark maintainer, I want to trigger question generation both manually via workflow_dispatch and by labeling an issue, so that I can choose the most convenient workflow
-5. As a researcher, I want to discover BJJ-VQA in the HuggingFace Community Evals directory, so that I can run the benchmark on my own models
-6. As a BJJ creator, I want to see a visual demo of VLMs failing at BJJ reasoning questions, so that I understand why this benchmark matters and grant permission for my content
-7. As a researcher, I want to compare multiple models on a leaderboard with accuracy per category and subject, so that I can understand model strengths and weaknesses
-8. As a user, I want to browse individual questions with their images, choices, and which models got them right/wrong, so that I can analyze failure modes
-9. As a BJJ practitioner, I want to take the test myself and compare my answers against model performance, so that I can engage with the benchmark interactively
-10. As a benchmark maintainer, I want the pipeline to warn me if new questions would unbalance the dataset (any bucket >40%), so that I can maintain statistical validity
-11. As a benchmark maintainer, I want the pipeline to retry transient failures (rate limits, timeouts) before flagging for human review, so that I maximize automation
-12. As a developer, I want to run `bjj-vqa generate <url>` to produce candidate questions with frames in a single command, so that I can test the pipeline locally
-13. As a benchmark maintainer, I want all generated questions to include both COMPLETION and CLASSIFICATION stem types, so that the dataset has format diversity
-14. As a benchmark maintainer, I want the pipeline to respect the methodology in docs/methodology.md, so that every question satisfies the core validity criterion (both image and BJJ knowledge required)
-15. As a researcher, I want to run the benchmark against multiple models manually using the existing inspect-ai pipeline, so that I can establish baseline results
-16. As a benchmark maintainer, I want the project's scripts directory to be pruned and relevant functionality consolidated into the `bjj-vqa` CLI, so that the codebase stays clean and discoverable
+1. As a benchmark maintainer, I want to trigger question generation with a YouTube URL, so that I can produce candidate questions without manual effort
+2. As a benchmark maintainer, I want Gemini to decide how many questions a video contains (3-8 range), so that I get as many good concepts as the video supports and no padded filler
+3. As a benchmark maintainer, I want Gemini to suggest frame timestamps alongside each question, so that frame extraction is fully automated
+4. As a benchmark maintainer, I want generated questions to arrive as a PR against data/, so that I can review and merge with a single click
+5. As a benchmark maintainer, I want the PR to include an eval report showing which questions passed and which failed, so that I can make an informed merge decision
+6. As a benchmark maintainer, I want CI to block a PR on data/samples.json if any question fails the quality evals, so that bad questions cannot be merged silently
+7. As a benchmark maintainer, I want to override a failing CI eval gate on GitHub, so that I can accept a question I disagree with on valid grounds
+8. As a benchmark maintainer, I want to re-trigger generation for a URL with free-form instructions, so that I can guide Gemini toward better questions on a retry (Track B)
+9. As a benchmark maintainer, I want the agentic loop to pass previous output alongside new instructions to Gemini, so that Gemini revises rather than regenerates from scratch (Track B)
+10. As a benchmark maintainer, I want the agentic loop to stop after a fixed number of retries and flag unresolved failures in the PR, so that the pipeline does not run indefinitely
+11. As a benchmark maintainer, I want to run `bjj-vqa evals` on a question locally, so that I can check quality before opening a PR
+12. As a benchmark maintainer, I want quality evals to use a cheap model (Gemma 4 31B, free on OpenRouter), so that the pipeline has no meaningful cost
+13. As a benchmark maintainer, I want to run `bjj-vqa add` to commit a reviewed tmp directory to the dataset, so that the merge step is always explicit and agent-controlled
+14. As a benchmark maintainer, I want `bjj-vqa validate` to pass on every commit to main, so that data/ is always in a consistent state
+15. As a benchmark maintainer, I want the scripts/ directory removed and any useful functionality folded into the bjj-vqa CLI, so that the codebase has a single discoverable entry point
+16. As a benchmark maintainer, I want CONTEXT.md at the repo root summarising the domain model and architecture, so that AI agents and new contributors have a reliable starting point
+17. As a researcher, I want to discover BJJ-VQA in the HuggingFace Community Evals directory, so that I can run the benchmark on my own models
+18. As a researcher, I want to compare model accuracy on a leaderboard broken down by category and subject, so that I can understand where models succeed and fail
+19. As a researcher, I want to run the inspect-ai eval pipeline manually against any model via OpenRouter, so that I can benchmark a model without writing code
+20. As a benchmark maintainer, I want the PR to warn if any dataset bucket exceeds 40%, so that I can keep the benchmark statistically balanced
 
 ## Implementation Decisions
 
-### Architecture
-- **Single repository**: the private repo's pipeline code is merged into `bjj-vqa` at `src/bjj_vqa/generate/`, but barely reused — the existing private repo code is of low quality and will be largely rewritten
-- **Three parallel development tracks**: (A) question pipeline, (B) Gradio demo app, (C) HF Community Evals listing (already submitted via PR #5)
-- **Incremental delivery**: each slice ships working, testable code before the next starts. TDD enforced on all slices. No waterfall.
-- **Vertical slices**: each issue is a thin end-to-end slice that an agent can pick up independently with no shared context between sessions
+### Two parallel development tracks
 
-### Question Generation Pipeline
-- **Gemini 3 Flash** (via Google AI Studio) as the question generator, processing full YouTube URLs directly in a single pass — no intermediate extraction step
-- **Sequential processing** within a video (full context is required for each question, wall-clock time does not matter for background runs)
-- **Full YouTube URL per API call** (not segment-only), because technique understanding requires the full setup/execution context
-- **Frame extraction** via `yt-dlp` + `ffmpeg` at Gemini-suggested timestamps, automated and included in the same PR as the questions
-- **Adversarial review loop**: a different model reviews generated questions against the defined evals via a custom inspect-ai scorer
-- **Review scoring**: inspect-ai custom scorer using `get_model()` for structured LLM-as-judge evaluation. If quality proves poor, pivot to deepeval `GEval`
-- **Quality threshold and max retry attempts**: defined during implementation, not pre-specified
-- **Mock-first approach**: the generate CLI starts with a mock Gemini that returns data from existing `samples.json` as a fixture, making the first slice fully testable without API keys
-- **OpenCode skill** is a `SKILL.md` markdown file written alongside the CLI it wraps — not a separate PR. Skills are reusable instruction bundles, not code deliverables.
+Track A and Track B are developed concurrently as independent GitHub Issues. Agents are unaware of the competition. The maintainer reviews both PRs and decides which approach produces better questions. The losing track is closed without merge.
 
-### Orchestrator
-- **OpenCode** as the orchestrator, with a custom skill wrapping the Python pipeline CLI
-- **GitHub Actions** triggered by both `workflow_dispatch` (manual) and issue labeling
-- **PR-based output**: pipeline opens a PR to `data/samples.json` + `data/images/` in the same commit
-- **No MCP** — CLI + Skill approach is cheaper on tokens, more debuggable, and sufficient for a single-user workflow
+### Inference
 
-### Evaluation
-- **Multi-model evaluation**: manual process using existing `inspect eval` pipeline. No new CLI needed. Run against each model, store results in `logs/` as JSON for the demo app to consume
-- **No-image ablation**: skipped for v0.1. Will be revisited after question quality is validated
-- **Eval models for v0.1**: Gemma 4 31B (free on OpenRouter) as open-weight baseline, Gemini 3 Flash (cheap via OpenRouter) as proprietary baseline. Frontier models (Opus 4.7, Gemini 3 Pro) deferred until question quality validated
+All model calls use OpenRouter. OpenRouter supports YouTube URL passthrough for Gemini models natively, so no Google AI Studio SDK is required. The single credential is `OPENROUTER_API_KEY`.
 
-### Demo App
-- **Gradio** on HuggingFace Spaces (free hosting, native HF ecosystem)
-- **Scrap existing PR #25** and rebuild from scratch using vertical slices
-- **3 tabs, built incrementally**:
-  1. Leaderboard — accuracy per model, per category, per subject
-  2. Question browser — image, choices, correct answer, model right/wrong
-  3. Take the Test — interactive user participation
-- **Mock data for immediate demo** — leaderboard tab ships with placeholder data so the app is demonstrable before eval results exist
+- **Generator**: Gemini 3 Flash via OpenRouter — processes YouTube URLs directly, returns structured output
+- **Eval reviewer**: Gemma 4 31B via OpenRouter — free, sufficient for quality judgement
+- **Benchmark eval models**: Gemma 4 31B (open-weight baseline), Gemini 3 Flash (proprietary baseline)
+
+### Generation pipeline
+
+Gemini 3 Flash receives a YouTube URL and a base system prompt (stored in the generate module alongside the Python code). It returns a JSON array matching the existing `SampleRecord` schema — structured output enforced by Pydantic. Gemini decides how many questions the video supports (3-8 guidance, not a hard limit). Each question includes a suggested timestamp.
+
+Frames are extracted at Gemini's suggested timestamps using yt-dlp and ffmpeg. Output writes to a tmp directory mirroring the data/ layout — `questions.json` + `images/`. Nothing touches `data/` until `bjj-vqa add` is called explicitly.
+
+**CLI:**
+- `bjj-vqa generate <url>` — generates questions + extracts frames to tmp dir, prints tmp path
+- `bjj-vqa generate <url> --instructions <str> --previous <path>` — Track B: injects previous output and agent guidance into the Gemini prompt
+- `bjj-vqa add <tmpdir>` — assigns sequential IDs, moves images to data/images/, appends to data/samples.json, runs validate
+- `bjj-vqa evals <tmpdir or question.json>` — runs DeepEval GEval against the criteria in evals/, returns structured pass/fail with reasoning
+
+### Quality evals
+
+`evals/` at the repo root contains DeepEval GEval test files — parallel to `tests/` for code. Each eval criterion from the methodology maps to a GEval metric. The same eval files are used in two contexts:
+
+- **Generation loop**: `bjj-vqa evals` invokes DeepEval programmatically, returns structured JSON feedback the agent can use to guide re-prompting
+- **CI quality gate**: `deepeval test run evals/` runs on every PR that touches data/samples.json
+
+DeepEval is in its own `evals` dependency group — not a runtime dependency of the published package.
+
+### Project structure
+
+```
+evals/            — DeepEval GEval criteria (parallel to tests/)
+src/
+  app/
+    app.py        — Gradio leaderboard (HF Spaces entry point)
+  bjj_vqa/
+    cli.py        — all subcommands
+    schema.py     — SampleRecord, Source (unchanged)
+    task.py       — inspect-ai benchmark task (unchanged)
+    generate/
+      __init__.py
+      prompt.md   — Gemini system prompt
+CONTEXT.md        — domain model + architecture (replaces architecture.md + methodology.md)
+docs/adr/         — decision records (kept, ADR-0005 and ADR-0006 updated)
+```
+
+`scripts/` is deleted entirely. `tools/` is deleted (empty). `prompts/` is deleted (prompt moves into generate/).
+
+### Demo app
+
+Gradio app on HuggingFace Spaces. v0.1 ships a single leaderboard tab reading from `data/samples.json` and `logs/`. No mock data — the existing questions serve as the fixture. No empty tabs. Question browser and "take the test" are post-v0.1.
+
+HF Spaces `app_file` points to `src/app/app.py`.
+
+### CI/CD
+
+Three jobs:
+
+1. **Fast** (every push): lint, type check, unit tests — no API calls
+2. **Quality gate** (PRs touching data/samples.json): `deepeval test run evals/` against new/changed questions — blocks merge on failure, human can override on GitHub
+3. **Release** (on tag): `bjj-vqa publish` to HuggingFace Hub
+
+Track A also adds a **generation workflow** triggered by `workflow_dispatch` with a URL input.
+
+### Track B — OpenCode skill
+
+A `SKILL.md` file in `.agents/skills/generate/` instructs the OpenCode agent on the full iterative loop: call `bjj-vqa generate`, inspect output, call `bjj-vqa evals`, decide whether to re-call with `--instructions` and `--previous`, and finally call `bjj-vqa add` and open a PR.
+
+### Documentation
+
+`CONTEXT.md` at the repo root consolidates `architecture.md` and `methodology.md`. It is the single file agents read before working in this repo. ADRs remain in `docs/adr/` as permanent decision records. `docs/agents/domain.md` is simplified to ~8 lines pointing agents to `CONTEXT.md` and relevant ADRs.
 
 ### Dataset
-- **Target**: ~80-100 validated questions for v0.1
-- **Wipe existing 57 questions**: they are test data with known quality issues, not benchmark data
-- **Balance enforcement**: soft warning in PR description if any bucket exceeds 40%, not a hard gate
-- **Schema**: existing `SampleRecord` in `src/bjj_vqa/schema.py` — backward-compatible only
-- **Frame storage**: JPEGs committed to `data/images/` (repo is small enough)
 
-### Technical Decisions
-- **inspect-ai** for LLM-as-judge (no new dependency, already in pyproject.toml)
-- **Pydantic** for structured output enforcement from Gemini API
-- **yt-dlp** (Unlicense license, GPL-compatible) + **ffmpeg** for frame extraction
-- **OpenRouter** as the primary inference provider (can use Google AI Studio key via OpenRouter)
-- **CLI approach over MCP**: 4-32x fewer tokens per call, debuggable with stdout/stderr, LLM already knows Unix composability patterns
-- **Existing `ty check` CI failure**: ignored for now — new slices focus on functionality, type errors fixed when code is touched
+- Existing 57 questions remain as v0.1 fixtures — they will be replaced during v1 mass production, not before
+- Target: 80-100 validated questions for v1
+- Soft balance warning in PR description if any bucket exceeds 40%
+- Schema: existing `SampleRecord` — backward-compatible only
+- Frames: JPEGs in data/images/, named with short UUID hex (e.g. `a3f7b9c1.jpg`) — no sequential IDs, no renaming needed when questions are removed
 
-### Legacy Cleanup
-- **Scripts directory**: audit aggressively. Delete unused scripts. Fold useful logic into `bjj-vqa` CLI subcommands
-- **No-image ablation script**: can be deleted (skipped for v0.1)
-- **Submit HF script**: check if subsumed by existing `bjj-vqa publish` command
+### Versioning
 
-### HuggingFace Community Evals
-- PR #5 already open at `huggingface/community-evals` (3 additions, awaiting review)
-- `eval.yaml` already valid and conformant
-- No internal work needed — tracked externally
-
-### Release
-- **Manual checklist**: tag, HF publish, README update, CI green, TODO.md update — no automation needed for v0.1
+- **v0.1**: current 57 questions — development fixture set, used to validate pipeline and demo
+- **v1**: mass-produced, fully validated questions generated by the new pipeline
 
 ## Testing Decisions
 
-- **TDD enforced on all slices**: write failing tests first, implement until green, then refactor
-- **Tests in `tests/` directory**, following existing conventions in `tests/test_schema.py`, `tests/test_cli.py`, `tests/test_task.py`
-- **Mock-first for pipeline**: the generate CLI uses a mock Gemini returning fixture data from existing `samples.json` — fully testable without API keys
-- **Review scorer tested with mocked LLM responses**: verify score extraction, threshold gate logic, and retry behavior in isolation
-- **`@pytest.mark.vision` for tests requiring live model API keys**
-- **No API calls in unmarked tests** (CI has no keys)
-- **Existing test suite must pass**: `uv run pytest -x`
-- **CLI tests for new subcommands** (`generate`, `review`)
-- **Demo app tested with mock data**: verify table rendering, filter logic, and scoring logic without real eval results
-- **Schema validation tests updated** for any backward-compatible changes
+Good tests assert observable external behaviour — CLI exit codes, file system state, JSON output shape — not internal implementation. Tests never make real API calls unless marked `@pytest.mark.vision`.
+
+- **`tests/`**: unit and integration tests for CLI subcommands, schema validation, and task loading. Follow conventions in existing `test_schema.py`, `test_cli.py`, `test_task.py`.
+- **`evals/`**: DeepEval GEval tests for question quality. These are data tests, not code tests — they run against actual question records.
+- **generate module**: tested with a mocked OpenRouter response returning fixture data from existing `samples.json`. No real API calls in unmarked tests.
+- **`bjj-vqa add`**: tested by running against a known tmp fixture and asserting data/samples.json and data/images/ state.
+- **`bjj-vqa evals`**: tested with a mocked DeepEval response to verify structured output format and exit code behaviour.
+- **app**: tested with real data from samples.json — no mock data layer needed.
+- All new subcommands follow the CLI test pattern in `test_cli.py`.
 
 ## Out of Scope
 
-- Video temporal reasoning (questions remain single-frame only)
-- Multilingual support (English only for v0.1)
-- Multi-image questions (schema supports it, but pipeline produces single-image)
-- Automated dataset balancing enforcement (soft warning only, not a hard gate)
+- Video temporal reasoning (single-frame only)
+- Multilingual support (English only)
+- Multi-image questions
+- Hard dataset balance enforcement (soft warning only)
 - Frontier model evaluation (deferred until question quality validated)
-- Source video downloading for the pipeline (Gemini processes YouTube URLs directly)
-- Confident AI / deepeval platform integration (may be added later if pivot needed)
-- No-image ablation (skipped for v0.1)
-- Multi-model evaluation automation (manual process using existing pipeline)
+- No-image ablation (deferred to post-v0.1)
+- Question browser and "take the test" demo tabs (post-v0.1)
 - Release automation (manual checklist)
-- Fixing pre-existing `ty check` CI failure on main (deferred)
+- Fixing pre-existing `ty check` CI failures on main
 
 ## Further Notes
 
-- The PR for HF Community Evals listing is already open (huggingface/community-evals#5)
-- The adversarial loop is implemented as a full harness from day one (MVP approach), with OpenCode skill and GitHub Action wrapping incrementally
-- The review model must be different from the generator to avoid shared blind spots
-- All pipeline output follows the existing `SampleRecord` schema — `uv run bjj-vqa validate` must pass on any pipeline output
-- Dataset limitations documented in README: source diversity (currently all Cobrinha), category imbalance, small sample sizes for some subjects
-- Each slice is independently grabbable by an AI agent with no shared context between sessions — the issue body must contain all necessary context, API contracts, and test baselines
-- Skills are `SKILL.md` files (reusable instruction bundles), not code deliverables — they ship alongside the CLI they wrap, not as separate PRs
+- HF Community Evals PR is already open at huggingface/community-evals — no internal work needed
+- Each GitHub Issue must be self-contained: the issue body is the agent's entire context. No cross-issue references for implementation details.
+- Development runs on OpenClaw (Qwen 3.6 Plus): agents pick up `ready-for-agent` issues independently, open PRs, and do not share context between sessions
+- `uv run bjj-vqa validate` must pass on every commit that touches data/
+- ADR-0005 updated: OpenRouter scope extended from CI-only to all inference including generation
+- ADR-0006 updated: references CONTEXT.md instead of the now-deleted methodology.md

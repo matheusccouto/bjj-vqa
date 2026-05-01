@@ -1,6 +1,12 @@
 name: "BJJ-VQA"
-description: "Brazilian Jiu-Jitsu Visual Question Answering Benchmark"
+description: >
+  Brazilian Jiu-Jitsu Visual Question Answering benchmark. Tests whether
+  Vision-Language Models can reason about BJJ mechanics from images, not just
+  recognize technique names. Each question presents a still frame and asks why
+  a specific visible detail matters — the correct answer requires both the image
+  and domain knowledge.
 evaluation_framework: "inspect-ai"
+
 tasks:
   - id: "bjj_vqa"
     split: "test"
@@ -9,3 +15,7 @@ tasks:
       input_image: "image"
       target: "answer"
       choices: "choices"
+    solvers:
+      - name: multiple_choice
+    scorers:
+      - name: choice

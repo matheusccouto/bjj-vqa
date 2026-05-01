@@ -64,23 +64,7 @@ Images live in `data/images/` and are committed to this repo. The packaged datas
 
 ### HuggingFace Community Eval
 
-This benchmark is registered as a [HuggingFace Community Eval](https://huggingface.co/blog/community-evals). To evaluate a model:
-
-```bash
-# From the HuggingFace dataset
-inspect eval couto/bjj-vqa --model <model_id>
-
-# Or from this repository
-inspect eval src/bjj_vqa/task.py --model <model_id>
-```
-
-**eval.yaml configuration:**
-- `evaluation_framework`: `inspect-ai`
-- `field_spec.input`: `question`
-- `field_spec.input_image`: `image`
-- `field_spec.target`: `answer`
-- `field_spec.choices`: `choices`
-- `split`: `test`
+BJJ-VQA is being registered as a [HuggingFace Community Eval](https://huggingface.co/blog/community-evals). See [`eval.yaml`](eval.yaml) for the benchmark spec (format: [inspect-ai](https://inspect.aisi.org.uk/)) and the [HF Eval Results docs](https://huggingface.co/docs/hub/eval-results) for submission details.
 
 ## Contributing
 
@@ -89,7 +73,7 @@ Contributions are pairs of (image + question) submitted as a single PR.
 **Image requirements**
 - JPEG, extracted manually from a CC BY or CC BY-SA YouTube video
 - Max resolution: 720p (1280px width) - higher resolutions will be resized
-- Filename: next sequential 5-digit ID (e.g. `00006.jpg`)
+- Filename: short UUID hex (e.g. `a3f7b9c1.jpg`) — do not use sequential IDs
 - Commit the frame directly
 
 **Question requirements**
