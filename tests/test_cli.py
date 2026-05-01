@@ -153,3 +153,12 @@ class TestValidate:
         from bjj_vqa.cli import validate
 
         validate()
+
+    @patch("bjj_vqa.cli.validate_sources")
+    def test_validate_empty_dataset(self, mock_validate_sources, temp_data_env):
+        """Validate passes on an empty dataset."""
+        write_samples(temp_data_env, [])
+
+        from bjj_vqa.cli import validate
+
+        validate()
