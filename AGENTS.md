@@ -17,7 +17,7 @@ Read `docs/methodology.md`. Update `sources/registry.jsonl`. Run `uv run bjj-vqa
 </important>
 
 <important if="you are modifying the schema">
-Backward-compatible only. New required fields need migration of all existing records. Update `tests/test_schema.py`. ADR in `docs/decisions/`.
+Backward-compatible only. New required fields need migration of all existing records. Update `tests/test_schema.py`. ADR in `docs/adr/`.
 </important>
 
 <important if="you are writing tests">
@@ -27,6 +27,17 @@ Tests in `tests/`. API-key tests marked `@pytest.mark.vision`. No API calls in u
 <important if="you are touching HuggingFace integration">
 `eval.yaml` must stay valid. README frontmatter must stay conformant. Do not modify without checking HF Community Evals spec.
 </important>
+
+## Agent skills
+
+### Issue tracker
+GitHub Issues on matheusccouto/bjj-vqa (via `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+Single-context layout. `CONTEXT.md` at root, ADRs in `docs/adr/`. See `docs/agents/domain.md`.
 
 ## References
 - uv: https://docs.astral.sh/uv/llms.txt
