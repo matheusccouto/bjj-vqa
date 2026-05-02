@@ -20,6 +20,7 @@ dependencies = [
     "datasets>=2.14.0",
     "pillow>=10.0.0",
     "pydantic>=2.0.0",
+    "yt-dlp>=2025.1.0",
 ]
 
 [project.scripts]
@@ -62,6 +63,13 @@ select = ["ALL"]
 "src/bjj_vqa/cli.py" = [
     "T201",   # print-used - CLI uses print for output
     "TC001",  # SampleRecord used at runtime (model_validate calls)
+    "PLC0415", # lazy import to avoid yt-dlp dep for validate/publish
+]
+"src/bjj_vqa/generate/__init__.py" = [
+    "S101",   # assert-used - validation checks
+    "S603",   # subprocess call - youtube URL is user-provided
+    "S607",   # partial executable path - yt-dlp and ffmpeg
+    "T201",   # print-used - error messages
 ]
 "scripts/**/*.py" = [
     "INP001", # implicit namespace package - scripts are standalone
@@ -71,7 +79,7 @@ select = ["ALL"]
 
 [tool.pytest.ini_options]
 markers = [
-    "vision: requires a live model API key; run with -m vision",
+    "integration: requires a live model API key; run with -m integration",
 ]
 
 [tool.ty.environment]
