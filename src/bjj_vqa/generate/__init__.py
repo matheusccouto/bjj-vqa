@@ -47,7 +47,7 @@ def generate_questions(youtube_url: str) -> list[dict]:
 
     resp = client.chat.completions.create(
         model=_MODEL,
-        messages=[
+        messages=[  # ty: ignore[invalid-argument-type]
             {
                 "role": "user",
                 "content": [
