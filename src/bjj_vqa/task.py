@@ -27,7 +27,7 @@ def record_to_sample(
         for letter, path in zip("ABCD", image, strict=False):
             input_content.append(ContentText(text=f"Image {letter}:"))
             if images:
-                input_content.append(ContentImage(image=str(data_dir / path)))
+                input_content.append(ContentImage(image=str(data_dir / str(path))))
         input_content.append(ContentText(text=record["question"]))
     else:
         input_content = []
@@ -37,7 +37,7 @@ def record_to_sample(
 
     return Sample(
         id=record["id"],
-        input=[ChatMessageUser(content=input_content)],
+        input=[ChatMessageUser(content=input_content)],  # ty: ignore[invalid-argument-type]
         choices=record["choices"],
         target=record["answer"],
         metadata={
