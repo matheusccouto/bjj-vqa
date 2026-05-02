@@ -48,8 +48,9 @@ def _extract_accuracy(log_path: Path) -> dict:
     for name, metric in metrics.items():
         if name.startswith("accuracy[grouped="):
             group = name.split("grouped=")[1].rstrip("]")
-            if "value" in (metric.metadata or {}):
-                groups_data = metric.metadata["value"]
+            metadata = metric.metadata or {}
+            if "value" in metadata:
+                groups_data = metadata["value"]
             else:
                 # Try to compute from samples
                 groups_data = _compute_grouped_accuracy(log, group)
