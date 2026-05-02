@@ -48,11 +48,11 @@ def _make_eval_log(
         EvalSample(
             id=s.get("id", f"q{i}"),
             epoch=1,
-            input=[{"role": "user", "content": [{"type": "text", "text": "test?"}]}],
+            input=[{"role": "user", "content": [{"type": "text", "text": "test?"}]}],  # ty: ignore[invalid-argument-type]
             choices=["A", "B"],
             target=s.get("target", "A"),
-            output={"message": {"role": "assistant", "content": s.get("target", "A")}},
-            score=Score(value=s.get("score", "A"), answer=s.get("target", "A")),
+            output={"message": {"role": "assistant", "content": s.get("target", "A")}},  # ty: ignore[invalid-argument-type]
+            score=Score(value=s.get("score", "A"), answer=s.get("target", "A")),  # ty: ignore[unknown-argument]
             metadata=s.get("metadata", {}),
         )
         for i, s in enumerate(samples or [])
@@ -77,15 +77,15 @@ def _make_eval_log(
                 samples=3,
             ),
             model=model,
-            model_generate_config={},
+            model_generate_config={},  # ty: ignore[invalid-argument-type]
             model_args={},
             config=EvalConfig(),
             packages={"inspect_ai": "0.3.0"},
         ),
         plan=EvalPlan(
             name="plan",
-            steps=[{"solver": "multiple_choice", "params": {}}],
-            config={},
+            steps=[{"solver": "multiple_choice", "params": {}}],  # ty: ignore[invalid-argument-type]
+            config={},  # ty: ignore[invalid-argument-type]
         ),
         results=EvalResults(
             total_samples=len(eval_samples),
@@ -169,9 +169,9 @@ class TestLeaderboard:
 
     def test_builds_leaderboard_with_logs(self, logs_with_results: Path):
         """Leaderboard renders with existing logs."""
-        from src.app.app import build_leaderboard
+        from app.app import build_leaderboard
 
-        with patch("src.app.app.LOGS_DIR", logs_with_results):
+        with patch("app.app.LOGS_DIR", logs_with_results):
             data, headers = build_leaderboard()
 
         assert headers == ["Model", "Overall", "By Category", "By Subject"]
@@ -181,9 +181,9 @@ class TestLeaderboard:
 
     def test_empty_logs_returns_empty_table(self, empty_logs: Path):
         """App renders without crashing on empty logs."""
-        from src.app.app import build_leaderboard
+        from app.app import build_leaderboard
 
-        with patch("src.app.app.LOGS_DIR", empty_logs):
+        with patch("app.app.LOGS_DIR", empty_logs):
             data, headers = build_leaderboard()
 
         assert data == []
@@ -191,7 +191,7 @@ class TestLeaderboard:
 
     def test_accuracy_computed_correctly(self, logs_with_results: Path):
         """Accuracy values computed correctly from fixture log data."""
-        from src.app.app import _extract_accuracy
+        from app.app import _extract_accuracy
 
         log_path = logs_with_results / "openrouter_google_gemma-4-31b-it.eval"
         data = _extract_accuracy(log_path)
@@ -203,8 +203,8 @@ class TestLeaderboard:
 
     def test_app_creates_without_error(self, logs_with_results: Path):
         """Gradio app creates without error."""
-        from src.app.app import create_app
+        from app.app import create_app
 
-        with patch("src.app.app.LOGS_DIR", logs_with_results):
+        with patch("app.app.LOGS_DIR", logs_with_results):
             app = create_app()
         assert app is not None
