@@ -55,6 +55,13 @@ def main() -> None:
     publish_cmd.add_argument("--tag", required=True, help="Release tag")
     publish_cmd.set_defaults(func=lambda a: publish(a.repo, a.tag))
 
+    generate_cmd = subparsers.add_parser(
+        "generate",
+        help="Generate questions from a YouTube URL using Gemini",
+    )
+    generate_cmd.add_argument("url", help="YouTube URL of the instructional video")
+    generate_cmd.set_defaults(func=lambda a: generate(a.url))
+
     args = parser.parse_args()
     args.func(args)
 
@@ -254,3 +261,14 @@ def _require_env(name: str) -> str:
         print("Hint: Set it in your shell or .env file")
         sys.exit(1)
     return val
+
+
+def generate(youtube_url: str) -> None:
+    """Generate questions from a YouTube URL and append to the dataset."""
+    # Allow lazy import to avoid dependency on yt-dlp for validate/publish
+    from bjj_vqa.generate import run
+
+    records = run(youtube_url)
+    print(f"Generated {len(records)} questions")
+    print("Running validation...")
+    validate()
