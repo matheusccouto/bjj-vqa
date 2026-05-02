@@ -1,6 +1,7 @@
 ---
 pretty_name: BJJ-VQA
 license: cc-by-sa-4.0
+app_file: src/app/app.py
 tags:
   - vision-language-models
   - visual-question-answering
