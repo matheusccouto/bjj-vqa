@@ -55,6 +55,18 @@ uv run inspect view
 Any model supported by [inspect-ai](https://inspect.aisi.org.uk/providers.html)
 works. Evaluation results are stored in `.eval_results/` in the **model's** repository (not this dataset repo). See the [HuggingFace eval-results docs](https://huggingface.co/docs/hub/eval-results) for how to submit results.
 
+## Run the leaderboard app
+
+```bash
+# Install dependencies
+uv sync
+
+# Launch the Gradio app locally
+uv run python src/app/app.py
+```
+
+The app opens a local web UI with a leaderboard showing model accuracy from eval logs in `logs/`. To populate the leaderboard, copy `.eval` log files from HF Spaces (`.eval_results/` on the model card repo) into `logs/` at the repo root.
+
 ## Dataset
 
 Questions from CC-licensed BJJ instructional videos. Gi and no-gi positions across all experience levels.
