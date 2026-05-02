@@ -73,16 +73,7 @@ select = ["ALL"]
 ]
 "evals/**/*.py" = [
     "INP001", # implicit namespace package - evals are standalone
-    "D100",   # missing module docstring
-    "D102",   # missing docstring in method
-    "D107",   # missing docstring in __init__
-    "ANN201", # missing return type annotation
-    "ANN204", # missing return type in __init__
-    "T201",   # print-used - error messages
     "E501",   # line too long - criteria strings
-    "B905",   # zip strict
-    "PLW0603", # global statement
-    "RUF100", # unused noqa
 ]
 
 [tool.pytest.ini_options]

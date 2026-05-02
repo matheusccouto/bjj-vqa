@@ -15,9 +15,10 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          python-version-file: ".python-version"
 
       - name: Set up Python
-        run: uv python install 3.13
+        run: uv python install
 
       - name: Install dependencies
         run: uv sync --group evals
