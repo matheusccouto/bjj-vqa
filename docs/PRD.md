@@ -131,7 +131,7 @@ A `SKILL.md` file in `.agents/skills/generate/` instructs the OpenCode agent on 
 
 ## Testing Decisions
 
-Good tests assert observable external behaviour — CLI exit codes, file system state, JSON output shape — not internal implementation. Tests never make real API calls unless marked `@pytest.mark.vision`.
+Good tests assert observable external behaviour — CLI exit codes, file system state, JSON output shape — not internal implementation. Tests never make real API calls unless marked `@pytest.mark.integration`.
 
 - **`tests/`**: unit and integration tests for CLI subcommands, schema validation, and task loading. Follow conventions in existing `test_schema.py`, `test_cli.py`, `test_task.py`.
 - **`evals/`**: DeepEval GEval tests for question quality. These are data tests, not code tests — they run against actual question records.

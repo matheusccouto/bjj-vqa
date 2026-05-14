@@ -40,6 +40,7 @@ class SampleRecord(BaseModel):
     category: Category
     subject: Subject
     source: str
+    timestamp: int
 
     @model_validator(mode="after")
     def answer_within_choices(self) -> "SampleRecord":

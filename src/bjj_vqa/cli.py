@@ -188,7 +188,7 @@ def validate_sources(samples: list[dict] | None = None) -> None:
 
 def publish(repo: str, tag: str) -> None:
     """Publish dataset to Hugging Face Hub."""
-    token = _require_env("HF_TOKEN")
+    token = os.environ["HF_TOKEN"]
     data_dir = get_data_dir()
     data_path = data_dir / "samples.json"
 
@@ -232,6 +232,7 @@ def publish(repo: str, tag: str) -> None:
             "category": [r.category for r in records],
             "subject": [r.subject for r in records],
             "source": [r.source for r in records],
+            "timestamp": [r.timestamp for r in records],
         },
     )
 
@@ -251,16 +252,6 @@ def publish(repo: str, tag: str) -> None:
 
     print(f"Published {len(records)} records to {repo}")
     print(f"https://huggingface.co/datasets/{repo}")
-
-
-def _require_env(name: str) -> str:
-    """Get required environment variable or exit with error."""
-    val = os.environ.get(name)
-    if not val:
-        print(f"ERROR: Environment variable {name} is required but not set")
-        print("Hint: Set it in your shell or .env file")
-        sys.exit(1)
-    return val
 
 
 def generate(youtube_url: str) -> None:
