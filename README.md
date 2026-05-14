@@ -59,10 +59,10 @@ works. Evaluation results are stored in `.eval_results/` in the **model's** repo
 
 ```bash
 # Install dependencies
-uv sync
+uv sync --extras spaces
 
 # Launch the Gradio app locally
-uv run python src/app/app.py
+uv run src/app/app.py
 ```
 
 The app opens a local web UI with a leaderboard showing model accuracy from eval logs in `logs/`. To populate the leaderboard, copy `.eval` log files from HF Spaces (`.eval_results/` on the model card repo) into `logs/` at the repo root.
