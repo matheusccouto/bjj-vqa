@@ -1,11 +1,18 @@
 """Gradio leaderboard app for BJJ-VQA eval results."""
 
+import os
 from pathlib import Path
 
 import gradio as gr
-from inspect_ai.log import EvalLog, read_eval_log
+from inspect_ai.log import read_eval_log
 
-LOGS_DIR = Path(__file__).parent.parent.parent / "logs"
+LOGS_DIR = Path(os.getenv("BJJ_VQA_LOGS_DIR", ".eval_results"))
+
+EMPTY_MSG = (
+    "*No eval results yet. "
+    "Run `uv run inspect eval src/bjj_vqa/task.py --model <model>` "
+    "and place the `.eval` log in `logs/`.*"
+)
 
 
 def _find_eval_logs(logs_dir: Path) -> list[Path]:
@@ -25,7 +32,7 @@ def _extract_accuracy(log_path: Path) -> dict:
     - per_subject: {subject: accuracy}
     """
     log = read_eval_log(log_path, format="json")
-    model = log.eval.model if hasattr(log.eval, "model") else str(log.eval.model)
+    model = log.eval.model
 
     result: dict = {
         "model": model,
@@ -51,53 +58,25 @@ def _extract_accuracy(log_path: Path) -> dict:
             metadata = metric.metadata or {}
             if "value" in metadata:
                 groups_data = metadata["value"]
-            else:
-                # Try to compute from samples
-                groups_data = _compute_grouped_accuracy(log, group)
-
-            if isinstance(groups_data, dict):
-                key = f"per_{group}"
-                if key in result:
-                    result[key] = groups_data
-
-    # If grouped metrics weren't in the log, compute from samples
-    if not result["per_category"]:
-        result["per_category"] = _compute_grouped_accuracy(log, "category")
-    if not result["per_subject"]:
-        result["per_subject"] = _compute_grouped_accuracy(log, "subject")
+                if isinstance(groups_data, dict):
+                    key = f"per_{group}"
+                    if key in result:
+                        result[key] = groups_data
 
     return result
 
 
-def _compute_grouped_accuracy(
-    log: "EvalLog",
-    group: str,
-) -> dict[str, float]:
-    """Compute accuracy per group from per-sample results."""
-    if not log.samples:
-        return {}
-
-    groups: dict[str, list[int]] = {}
-    for sample in log.samples:
-        if sample.score is None:
-            continue
-        group_val = sample.metadata.get(group, "unknown")
-        is_correct = 1 if sample.score.value == 1 else 0
-        groups.setdefault(group_val, []).append(is_correct)
-
-    return {k: sum(v) / len(v) for k, v in groups.items()}
-
-
-def build_leaderboard() -> tuple[list[list], list]:
+def build_leaderboard() -> tuple[dict, str]:
     """Build leaderboard data from eval logs.
 
-    Returns (data, headers) for gr.Dataframe.
-    Data rows: [model, overall_accuracy, category_accuracy_str, subject_accuracy_str]
+    Returns (dataframe_kwargs, empty_msg) for gr.Dataframe and gr.Markdown.
     """
     eval_logs = _find_eval_logs(LOGS_DIR)
 
+    headers = ["Model", "Overall", "By Category", "By Subject"]
+
     if not eval_logs:
-        return [], ["Model", "Overall", "By Category", "By Subject"]
+        return {"headers": headers, "value": None}, EMPTY_MSG
 
     rows = []
     for log_path in eval_logs:
@@ -116,31 +95,20 @@ def build_leaderboard() -> tuple[list[list], list]:
 
         rows.append([data["model"], acc, cat_str, sub_str])
 
-    headers = ["Model", "Overall", "By Category", "By Subject"]
-    return rows, headers
+    return {"headers": headers, "value": rows}, ""
 
 
 def create_app() -> gr.Blocks:
     """Create the Gradio leaderboard app."""
-    data, headers = build_leaderboard()
-
     with gr.Blocks(title="BJJ-VQA Leaderboard") as app:
         gr.Markdown("# BJJ-VQA Leaderboard")
         gr.Markdown(
             "Model accuracy on the BJJ-VQA benchmark. "
             "Accuracy is broken down by category (gi/no-gi) and subject.",
         )
-        gr.Dataframe(
-            headers=headers,
-            value=data or None,
-            datatype=["str", "str", "str", "str"],
-        )
-        if not data:
-            gr.Markdown(
-                "*No eval results yet. "
-                "Run `uv run inspect eval src/bjj_vqa/task.py --model <model>` "
-                "and place the `.eval` log in `logs/`.*",
-            )
+        df = gr.Dataframe()
+        empty_msg = gr.Markdown(EMPTY_MSG, visible=False)
+        app.load(fn=build_leaderboard, outputs=[df, empty_msg])
 
     return app
 

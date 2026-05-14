@@ -52,7 +52,7 @@ def _make_eval_log(
             choices=["A", "B"],
             target=s.get("target", "A"),
             output={"message": {"role": "assistant", "content": s.get("target", "A")}},  # ty: ignore[invalid-argument-type]
-            score=Score(value=s.get("score", "A"), answer=s.get("target", "A")),  # ty: ignore[unknown-argument]
+            score=Score(value=s.get("score", 0.0), answer=s.get("target", "A")),  # ty: ignore[unknown-argument]
             metadata=s.get("metadata", {}),
         )
         for i, s in enumerate(samples or [])
@@ -125,25 +125,25 @@ def logs_with_results(tmp_path: Path) -> Path:
             {
                 "id": "q1",
                 "target": "A",
-                "score": "A",
+                "score": 1.0,
                 "metadata": {"category": "gi", "subject": "guard"},
             },
             {
                 "id": "q2",
                 "target": "A",
-                "score": "B",
+                "score": 0.0,
                 "metadata": {"category": "gi", "subject": "passing"},
             },
             {
                 "id": "q3",
                 "target": "B",
-                "score": "B",
+                "score": 1.0,
                 "metadata": {"category": "no_gi", "subject": "guard"},
             },
             {
                 "id": "q4",
                 "target": "B",
-                "score": "A",
+                "score": 0.0,
                 "metadata": {"category": "no_gi", "subject": "passing"},
             },
         ],
@@ -172,22 +172,24 @@ class TestLeaderboard:
         from app.app import build_leaderboard
 
         with patch("app.app.LOGS_DIR", logs_with_results):
-            data, headers = build_leaderboard()
+            data, empty_msg = build_leaderboard()
 
-        assert headers == ["Model", "Overall", "By Category", "By Subject"]
-        assert len(data) == 1
-        assert data[0][0] == "openrouter/google/gemma-4-31b-it"
-        assert data[0][1] == "75.0%"
+        assert empty_msg == ""
+        assert data["headers"] == ["Model", "Overall", "By Category", "By Subject"]
+        assert len(data["value"]) == 1
+        assert data["value"][0][0] == "openrouter/google/gemma-4-31b-it"
+        assert data["value"][0][1] == "75.0%"
 
     def test_empty_logs_returns_empty_table(self, empty_logs: Path):
         """App renders without crashing on empty logs."""
         from app.app import build_leaderboard
 
         with patch("app.app.LOGS_DIR", empty_logs):
-            data, headers = build_leaderboard()
+            data, empty_msg = build_leaderboard()
 
-        assert data == []
-        assert headers == ["Model", "Overall", "By Category", "By Subject"]
+        assert data["value"] is None
+        assert data["headers"] == ["Model", "Overall", "By Category", "By Subject"]
+        assert "No eval results yet" in empty_msg
 
     def test_accuracy_computed_correctly(self, logs_with_results: Path):
         """Accuracy values computed correctly from fixture log data."""
