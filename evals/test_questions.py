@@ -12,8 +12,9 @@ from pathlib import Path
 import pytest
 from deepeval import assert_test
 from deepeval.metrics import GEval
-from deepeval.models import OpenRouterModel
 from deepeval.test_case import LLMTestCase, SingleTurnParams
+
+from .multimodal_model import MultimodalOpenRouterModel
 
 # ---------------------------------------------------------------------------
 # Quality criteria from CONTEXT.md
@@ -35,7 +36,7 @@ CRITERIA = {
     ),
     "SINGLE_CORRECT": (
         "Evaluate whether the marked answer is the only defensible answer. "
-        "Given the question stem and options, there should be exactly one "
+        "Given the question stem, options, and image, there should be exactly one "
         "correct answer. Score 1 if only the marked answer is defensible. "
         "Score 0 if multiple answers could work."
     ),
@@ -83,17 +84,36 @@ def questions() -> list[dict]:
 
 
 @pytest.fixture(scope="module")
-def sample_questions(questions: list[dict]) -> list[dict]:
-    """Limit to first 3 questions to keep CI runs reasonable."""
-    return questions[:3]
+def sample_size() -> int:
+    """Determine sample size from EVAL_SAMPLE_SIZE env var.
+
+    Unset or -1 means all questions; a positive integer limits the sample.
+    """
+    raw = os.environ.get("EVAL_SAMPLE_SIZE", "-1")
+    try:
+        n = int(raw)
+    except ValueError:
+        n = -1
+    return n
 
 
 @pytest.fixture(scope="module")
-def judge() -> OpenRouterModel:
-    """Create the OpenRouter judge model."""
+def sample_questions(
+    questions: list[dict],
+    sample_size: int,
+) -> list[dict]:
+    """Limit to first N questions (or all if sample_size <= 0)."""
+    if sample_size <= 0:
+        return questions
+    return questions[:sample_size]
+
+
+@pytest.fixture(scope="module")
+def judge() -> MultimodalOpenRouterModel:
+    """Create the multimodal OpenRouter judge model."""
     if "OPENROUTER_API_KEY" not in os.environ:
-        pytest.skip("OPENROUTER_API_KEY is not set")
-    return OpenRouterModel(model="google/gemma-4-31b-it")
+        pytest.fail("OPENROUTER_API_KEY is not set")
+    return MultimodalOpenRouterModel(model="google/gemma-4-31b-it")
 
 
 # ---------------------------------------------------------------------------
@@ -102,13 +122,19 @@ def judge() -> OpenRouterModel:
 
 
 def _format_question(q: dict) -> str:
-    """Format a question for evaluation."""
+    """Format a question for evaluation, including full answer text."""
     pairs = zip("ABCD", q["choices"], strict=False)
     choices = "\n".join(f"{ltr}) {ch}" for ltr, ch in pairs)
-    return f"Question: {q['question']}\nOptions:\n{choices}\nAnswer: {q['answer']}"
+    answer_text = q["choices"]["ABCD".index(q["answer"])]
+    return f"Question: {q['question']}\nOptions:\n{choices}\nAnswer: {answer_text}"
 
 
-def _make_metric(criterion: str, judge: OpenRouterModel) -> GEval:
+def _image_path(q: dict) -> Path:
+    """Resolve the image path for a question."""
+    return _PROJECT_ROOT / "data" / q["image"]
+
+
+def _make_metric(criterion: str, judge: MultimodalOpenRouterModel) -> GEval:
     """Create a GEval metric for a criterion."""
     return GEval(
         name=criterion,
@@ -120,11 +146,13 @@ def _make_metric(criterion: str, judge: OpenRouterModel) -> GEval:
 
 
 def _make_test_case(q: dict, criterion: str) -> LLMTestCase:
-    """Create an LLMTestCase for a question and criterion."""
+    """Create a multimodal LLMTestCase for a question and criterion."""
     text = _format_question(q)
+    img = _image_path(q)
     return LLMTestCase(
-        input=f"Criterion: {criterion}\n{text}",
+        input=f"Criterion: {criterion}\n{text}\n[DEEPEVAL:IMAGE:{img}]",
         actual_output=text,
+        multimodal=True,
     )
 
 
@@ -137,7 +165,7 @@ def _make_test_case(q: dict, criterion: str) -> LLMTestCase:
 def test_question_quality(
     criterion: str,
     sample_questions: list[dict],
-    judge: OpenRouterModel,
+    judge: MultimodalOpenRouterModel,
 ) -> None:
     """Evaluate each sample question against all quality criteria."""
     metric = _make_metric(criterion, judge)
