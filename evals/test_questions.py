@@ -35,25 +35,28 @@ CRITERIA = {
     ),
     "SINGLE_CORRECT": (
         "Evaluate whether the marked answer is the only defensible answer. "
-        "Given the question stem and options, there should be exactly one correct answer. "
-        "Score 1 if only the marked answer is defensible. Score 0 if multiple answers could work."
+        "Given the question stem and options, there should be exactly one "
+        "correct answer. Score 1 if only the marked answer is defensible. "
+        "Score 0 if multiple answers could work."
     ),
     "IMAGE_DEPENDENCY": (
         "Evaluate whether answering requires the image. "
-        "The question must require a specific visual fact from the image to answer. "
-        "If the question can be answered from BJJ knowledge alone without the image, it FAILS. "
-        "Score 1 if the image is required. Score 0 if the question is solvable from text alone."
+        "The question must require a specific visual fact from the image. "
+        "If it can be answered from BJJ knowledge alone without the image, "
+        "it FAILS. Score 1 if the image is required. Score 0 if the question "
+        "is solvable from text alone."
     ),
     "IMAGE_CLARITY": (
-        "Evaluate whether a human BJJ practitioner could confirm what the stem implies. "
-        "Given the image, a practitioner should be able to confirm the situation described "
-        "in the question stem. Score 1 if the scenario is visually confirmable. Score 0 if not."
+        "Evaluate whether a human BJJ practitioner could confirm what "
+        "the stem implies. Given the image, a practitioner should be able "
+        "to confirm the situation. Score 1 if visually confirmable. Score 0 if not."
     ),
     "BJJ_CORRECTNESS": (
-        "Evaluate whether the marked answer is BJJ-correct and distractors are based on real concepts. "
-        "The correct answer must be technically accurate per Brazilian Jiu-Jitsu principles. "
-        "Distractors must be plausible to someone who trains (WRONG-CONTEXT, WRONG-MECHANISM, "
-        "or WRONG-DIRECTION types). Score 1 if BJJ-correct. Score 0 if technically wrong."
+        "Evaluate whether the marked answer is BJJ-correct and distractors are "
+        "based on real concepts. The correct answer must be technically accurate "
+        "per Brazilian Jiu-Jitsu principles. Distractors must be plausible to "
+        "someone who trains (WRONG-CONTEXT, WRONG-MECHANISM, or WRONG-DIRECTION "
+        "types). Score 1 if BJJ-correct. Score 0 if technically wrong."
     ),
     "FORMAT_COMPLIANCE": (
         "Evaluate format compliance: options must be similar in length, "
@@ -100,9 +103,8 @@ def judge() -> OpenRouterModel:
 
 def _format_question(q: dict) -> str:
     """Format a question for evaluation."""
-    choices = "\n".join(
-        f"{letter}) {choice}" for letter, choice in zip("ABCD", q["choices"], strict=False)
-    )
+    pairs = zip("ABCD", q["choices"], strict=False)
+    choices = "\n".join(f"{ltr}) {ch}" for ltr, ch in pairs)
     return f"Question: {q['question']}\nOptions:\n{choices}\nAnswer: {q['answer']}"
 
 
@@ -132,7 +134,11 @@ def _make_test_case(q: dict, criterion: str) -> LLMTestCase:
 
 
 @pytest.mark.parametrize("criterion", list(CRITERIA))
-def test_question_quality(criterion: str, sample_questions: list[dict], judge: OpenRouterModel) -> None:
+def test_question_quality(
+    criterion: str,
+    sample_questions: list[dict],
+    judge: OpenRouterModel,
+) -> None:
     """Evaluate each sample question against all quality criteria."""
     metric = _make_metric(criterion, judge)
     for q in sample_questions:

@@ -71,11 +71,6 @@ select = ["ALL"]
     "T201",   # print-used - scripts output to stdout
     "PLR2004",# magic value comparison - acceptable for simple scripts
 ]
-"evals/**/*.py" = [
-    "INP001", # implicit namespace package - evals are standalone
-    "E501",   # line too long - criteria strings
-]
-
 [tool.pytest.ini_options]
 markers = [
     "vision: requires a live model API key; run with -m vision",
