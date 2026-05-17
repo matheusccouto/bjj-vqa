@@ -1,155 +1,76 @@
-"""Tests for BJJ-VQA CLI commands."""
-
-import json
-import os
-import tempfile
-from pathlib import Path
-from unittest.mock import patch
+"""Tests for BJJ-VQA CLI: validate and validate-sources."""
 
 import pytest
-from PIL import Image
+
+from bjj_vqa.cli import validate, validate_sources
+
+from .helpers import (
+    EMPTY_REGISTRY,
+    VALID_SAMPLE,
+    init_data_dir,
+    write_registry,
+    write_samples,
+)
 
 
-@pytest.fixture
-def temp_data_env():
-    """Create temporary data directory and set BJJ_VQA_DATA_DIR env var."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        data_dir = Path(tmpdir)
-        images_dir = data_dir / "images"
-        images_dir.mkdir()
-
-        # Create test image
-        img = Image.new("RGB", (100, 100), color="red")
-        img.save(images_dir / "00001.jpg")
-
-        # Set env var and yield path
-        os.environ["BJJ_VQA_DATA_DIR"] = str(data_dir)
-        yield data_dir
-
-        # Cleanup
-        os.environ.pop("BJJ_VQA_DATA_DIR", None)
+def test_validate_happy_path(env):
+    """Valid fixture data passes validation end-to-end."""
+    validate(data_dir=env)
 
 
-def write_samples(data_dir: Path, samples: list[dict]) -> Path:
-    """Write samples.json to data directory."""
-    samples_path = data_dir / "samples.json"
-    samples_path.write_text(json.dumps(samples))
-    return samples_path
+def test_validate_rejects_bad_data(empty_env):
+    """Invalid schema field causes validation failure."""
+    write_samples(empty_env, [{**VALID_SAMPLE, "subject": "invalid_subject"}])
+    write_registry(empty_env, EMPTY_REGISTRY)
+    with pytest.raises(SystemExit):
+        validate(data_dir=empty_env)
 
 
-class TestValidate:
-    """Tests for validate CLI command."""
+def test_validate_rejects_missing_image(empty_env):
+    """Referencing a nonexistent image causes validation failure."""
+    write_samples(empty_env, [{**VALID_SAMPLE, "image": "images/nonexistent.jpg"}])
+    write_registry(empty_env, EMPTY_REGISTRY)
+    with pytest.raises(SystemExit):
+        validate(data_dir=empty_env)
 
-    @patch("bjj_vqa.cli.validate_sources")
-    def test_validate_success(self, mock_validate_sources, temp_data_env):
-        """Validate succeeds with valid samples."""
-        valid_samples = [
-            {
-                "id": "00001",
-                "image": "images/00001.jpg",
-                "question": "What technique is this?",
-                "choices": ["Option A", "Option B", "Option C", "Option D"],
-                "answer": "A",
-                "experience_level": "beginner",
-                "category": "gi",
-                "subject": "guard",
-                "source": "https://youtube.com/watch?v=test&t=60s",
-            },
-        ]
-        write_samples(temp_data_env, valid_samples)
 
-        # Import after env var is set
-        from bjj_vqa.cli import validate
+def test_validate_rejects_answer_beyond_choices(empty_env):
+    """Answer letter exceeding the number of choices causes failure."""
+    write_samples(
+        empty_env,
+        [{**VALID_SAMPLE, "choices": ["Only two", "Another"], "answer": "C"}],
+    )
+    write_registry(empty_env, EMPTY_REGISTRY)
+    with pytest.raises(SystemExit):
+        validate(data_dir=empty_env)
 
-        validate()
 
-    def test_validate_invalid_schema(self, temp_data_env):
-        """Validate fails with schema errors."""
-        invalid_samples = [
-            {
-                "id": "00001",
-                "image": "images/00001.jpg",
-                "question": "What technique is this?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": "A",
-                "experience_level": "beginner",
-                "category": "gi",
-                "subject": "invalid_subject",
-                "source": "https://youtube.com/watch?v=test",
-            },
-        ]
-        write_samples(temp_data_env, invalid_samples)
+def test_validate_rejects_missing_samples_json(tmp_path):
+    """Missing samples.json causes validation failure."""
+    data_dir = init_data_dir(tmp_path, with_fixtures=False)
+    # Remove what init_data_dir created (empty samples.json placeholder not needed)
+    (data_dir / "samples.json").unlink(missing_ok=True)
+    with pytest.raises(SystemExit):
+        validate(data_dir=data_dir)
 
-        from bjj_vqa.cli import validate
 
-        with pytest.raises(SystemExit) as exc_info:
-            validate()
-        assert exc_info.value.code == 1
+def test_validate_sources_happy_path(env):
+    """Valid registry cross-references pass validation."""
+    validate_sources(data_dir=env)
 
-    def test_validate_missing_image(self, temp_data_env):
-        """Validate fails when image file doesn't exist."""
-        samples = [
-            {
-                "id": "00001",
-                "image": "images/nonexistent.jpg",
-                "question": "What technique is this?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": "A",
-                "experience_level": "beginner",
-                "category": "gi",
-                "subject": "guard",
-                "source": "https://youtube.com/watch?v=test",
-            },
-        ]
-        write_samples(temp_data_env, samples)
 
-        from bjj_vqa.cli import validate
-
-        with pytest.raises(SystemExit) as exc_info:
-            validate()
-        assert exc_info.value.code == 1
-
-    def test_validate_missing_samples_file(self, temp_data_env):
-        """Validate fails when samples.json doesn't exist."""
-        from bjj_vqa.cli import validate
-
-        with pytest.raises(SystemExit) as exc_info:
-            validate()
-        assert exc_info.value.code == 1
-
-    @patch("bjj_vqa.cli.validate_sources")
-    def test_validate_multiple_samples(self, mock_validate_sources, temp_data_env):
-        """Validate handles multiple samples."""
-        # Create additional image
-        img = Image.new("RGB", (100, 100), color="blue")
-        img.save(temp_data_env / "images" / "00002.jpg")
-
-        samples = [
-            {
-                "id": "00001",
-                "image": "images/00001.jpg",
-                "question": "Question 1?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": "A",
-                "experience_level": "beginner",
-                "category": "gi",
-                "subject": "guard",
-                "source": "https://youtube.com/watch?v=test&t=60s",
-            },
-            {
-                "id": "00002",
-                "image": "images/00002.jpg",
-                "question": "Question 2?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": "B",
-                "experience_level": "intermediate",
-                "category": "no_gi",
-                "subject": "submissions",
-                "source": "https://youtube.com/watch?v=test&t=120s",
-            },
-        ]
-        write_samples(temp_data_env, samples)
-
-        from bjj_vqa.cli import validate
-
-        validate()
+def test_validate_sources_rejects_bad_crossrefs(empty_env):
+    """Registry referencing nonexistent question IDs causes failure."""
+    write_samples(empty_env, [VALID_SAMPLE])
+    write_registry(
+        empty_env,
+        {
+            "url": "https://youtube.com/watch?v=SzL_uObk8fk",
+            "title": "Test",
+            "creator": "Test",
+            "license_type": "cc_by",
+            "question_ids": ["00001", "99999"],
+        },
+    )
+    with pytest.raises(SystemExit):
+        validate_sources(data_dir=empty_env)

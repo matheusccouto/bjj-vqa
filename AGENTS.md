@@ -20,7 +20,7 @@ Backward-compatible only. New required fields need migration of all existing rec
 </important>
 
 <important if="you are writing tests">
-Tests in `tests/`. API-key tests marked `@pytest.mark.vision`. No API calls in unmarked tests (CI has no keys). Use TDD: write failing tests first.
+Tests in `tests/`. API-key tests marked `@pytest.mark.integration`. No API calls in unmarked tests (CI has no keys). Use TDD: write failing tests first.
 </important>
 
 <important if="you are touching HuggingFace integration">

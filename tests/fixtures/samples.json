@@ -1,0 +1,36 @@
+[
+  {
+    "id": "00001",
+    "image": "images/00001.jpg",
+    "question": "When your opponent reacts to your armlock setup like this, you make space to pass your leg by",
+    "choices": [
+      "pulling them closer to your chest so you have room",
+      "pushing with your legs and your collar hand",
+      "bridging your hips to effectively off-balance their strong base",
+      "framing against their bicep to prevent the guard pass"
+    ],
+    "answer": "B",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "submissions",
+    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=70s",
+    "timestamp": 70
+  },
+  {
+    "id": "00002",
+    "image": "images/00002.jpg",
+    "question": "When your opponent defends the armlock from this position, you point your left heel down and",
+    "choices": [
+      "lifting your heel up to reduce pressure on their neck",
+      "grabbing their far leg to initiate a pendulum sweep",
+      "pulling your collar to apply a lapel choke",
+      "bridging your hips high to hyper-extend their trapped arm"
+    ],
+    "answer": "C",
+    "experience_level": "intermediate",
+    "category": "gi",
+    "subject": "submissions",
+    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=120s",
+    "timestamp": 120
+  }
+]
