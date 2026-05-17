@@ -14,7 +14,13 @@ from huggingface_hub.utils import HfHubHTTPError
 from PIL import Image
 from pydantic import ValidationError
 
-from bjj_vqa.schema import SampleRecord, Source, as_image_list, get_data_dir
+from bjj_vqa.schema import (
+    SampleRecord,
+    Source,
+    as_image_list,
+    get_data_dir,
+    get_sources_dir,
+)
 
 
 def _image_to_data_uri(img: Image.Image) -> str:
@@ -42,25 +48,56 @@ def main() -> None:
         "validate",
         help="Validate dataset schema and sources",
     )
-    validate_cmd.set_defaults(func=lambda _: validate())
+    validate_cmd.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Path to data directory",
+    )
+    validate_cmd.set_defaults(func=lambda a: validate(data_dir=a.data_dir))
 
     validate_sources_cmd = subparsers.add_parser(
         "validate-sources",
         help="Validate sources/registry.jsonl cross-references",
     )
-    validate_sources_cmd.set_defaults(func=lambda _: validate_sources())
+    validate_sources_cmd.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Path to data directory",
+    )
+    validate_sources_cmd.set_defaults(
+        func=lambda a: validate_sources(data_dir=a.data_dir),
+    )
 
     publish_cmd = subparsers.add_parser("publish", help="Publish to HuggingFace Hub")
     publish_cmd.add_argument("--repo", required=True, help="Target repo")
     publish_cmd.add_argument("--tag", required=True, help="Release tag")
-    publish_cmd.set_defaults(func=lambda a: publish(a.repo, a.tag))
+    publish_cmd.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Path to data directory",
+    )
+    publish_cmd.set_defaults(
+        func=lambda a: publish(a.repo, a.tag, data_dir=a.data_dir),
+    )
 
     generate_cmd = subparsers.add_parser(
         "generate",
         help="Generate questions from a YouTube URL using Gemini",
     )
     generate_cmd.add_argument("url", help="YouTube URL of the instructional video")
-    generate_cmd.set_defaults(func=lambda a: generate(a.url))
+    generate_cmd.add_argument(
+        "--model",
+        default="google/gemini-3.1-flash-lite",
+        help="OpenRouter model ID (default: google/gemini-3.1-flash-lite)",
+    )
+    generate_cmd.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Path to data directory",
+    )
+    generate_cmd.set_defaults(
+        func=lambda a: generate(a.url, model=a.model, data_dir=a.data_dir),
+    )
 
     args = parser.parse_args()
     args.func(args)
@@ -75,8 +112,10 @@ def _validate_record(record: dict, data_dir: Path) -> list[str]:
         SampleRecord.model_validate(record)
     except ValidationError as e:
         for err in e.errors():
-            field = err["loc"][0]
-            value = record.get(field, "missing")
+            field = err["loc"][-1] if err["loc"] else "record"
+            value = (
+                record.get(field, "missing") if field != "record" else str(record)[:80]
+            )
             errors.append(f"  {rid}: {field}='{value}' - {err['msg']}")
         return errors
 
@@ -89,16 +128,16 @@ def _validate_record(record: dict, data_dir: Path) -> list[str]:
     return errors
 
 
-def validate() -> None:
+def validate(data_dir: Path | None = None) -> None:
     """Validate samples.json schema, image paths, and source registry."""
-    data_dir = get_data_dir()
+    data_dir = get_data_dir(data_dir)
     data_path = data_dir / "samples.json"
 
     try:
         data: list[dict] = json.loads(data_path.read_text())
     except FileNotFoundError:
         print(f"ERROR: samples.json not found at {data_path}")
-        print("Hint: Run from project root or set BJJ_VQA_DATA_DIR")
+        print("Hint: Run from project root or use --data-dir")
         sys.exit(1)
     except json.JSONDecodeError as e:
         print(f"ERROR: Invalid JSON in {data_path}")
@@ -116,7 +155,7 @@ def validate() -> None:
         sys.exit(1)
 
     print(f"OK: {len(data)}/{len(data)} records valid")
-    validate_sources(data)
+    validate_sources(data, data_dir=data_dir)
 
 
 def _load_registry(registry_path: Path) -> list[Source]:
@@ -157,10 +196,12 @@ def _cross_reference_errors(sources: list[Source], samples: list[dict]) -> list[
     return errors
 
 
-def validate_sources(samples: list[dict] | None = None) -> None:
+def validate_sources(
+    samples: list[dict] | None = None,
+    data_dir: Path | None = None,
+) -> None:
     """Validate sources/registry.jsonl cross-references against samples.json."""
-    project_root = Path(__file__).parent.parent.parent
-    registry_path = project_root / "sources" / "registry.jsonl"
+    registry_path = get_sources_dir(data_dir) / "registry.jsonl"
 
     try:
         sources = _load_registry(registry_path)
@@ -168,8 +209,9 @@ def validate_sources(samples: list[dict] | None = None) -> None:
         print(f"ERROR: registry not found at {registry_path}")
         sys.exit(1)
 
+    actual_data_dir = get_data_dir(data_dir)
     if samples is None:
-        data_path = get_data_dir() / "samples.json"
+        data_path = actual_data_dir / "samples.json"
         try:
             samples = json.loads(data_path.read_text())
         except FileNotFoundError:
@@ -186,10 +228,10 @@ def validate_sources(samples: list[dict] | None = None) -> None:
     print(f"OK: {len(sources)} sources cover all {len(samples)} questions")
 
 
-def publish(repo: str, tag: str) -> None:
+def publish(repo: str, tag: str, data_dir: Path | None = None) -> None:
     """Publish dataset to Hugging Face Hub."""
     token = os.environ["HF_TOKEN"]
-    data_dir = get_data_dir()
+    data_dir = get_data_dir(data_dir)
     data_path = data_dir / "samples.json"
 
     try:
@@ -254,12 +296,17 @@ def publish(repo: str, tag: str) -> None:
     print(f"https://huggingface.co/datasets/{repo}")
 
 
-def generate(youtube_url: str) -> None:
+def generate(
+    youtube_url: str,
+    *,
+    model: str | None = None,
+    data_dir: Path | None = None,
+) -> None:
     """Generate questions from a YouTube URL and append to the dataset."""
-    # Allow lazy import to avoid dependency on yt-dlp for validate/publish
-    from bjj_vqa.generate import run
+    from bjj_vqa.generate import _DEFAULT_MODEL, run
 
-    records = run(youtube_url)
+    effective_model = model or _DEFAULT_MODEL
+    records = run(youtube_url, model=effective_model, data_dir=data_dir)
     print(f"Generated {len(records)} questions")
     print("Running validation...")
-    validate()
+    validate(data_dir=data_dir)

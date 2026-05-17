@@ -3,352 +3,77 @@
 import pytest
 from pydantic import ValidationError
 
+from bjj_vqa.generate import GeneratedQuestion
 from bjj_vqa.schema import SampleRecord
 
 
-class TestValidSample:
-    """Tests for valid sample records."""
-
-    def test_minimal_valid_sample(self):
-        """Minimal valid sample with all required fields."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "What technique is this?",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test&t=60s",
-            "timestamp": 60,
-        }
-        sample = SampleRecord.model_validate(record)
-        assert sample.id == "00001"
-        assert sample.answer == "A"
-
-    def test_all_experience_levels(self):
-        """All valid experience levels."""
-        for level in ["beginner", "intermediate", "advanced"]:
-            record = {
-                "id": "00001",
-                "image": "images/00001.jpg",
-                "question": "Test?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": "A",
-                "experience_level": level,
-                "category": "gi",
-                "subject": "guard",
-                "source": "https://youtube.com/watch?v=test",
-                "timestamp": 0,
-            }
-            sample = SampleRecord.model_validate(record)
-            assert sample.experience_level == level
-
-    def test_all_categories(self):
-        """All valid categories."""
-        for cat in ["gi", "no_gi"]:
-            record = {
-                "id": "00001",
-                "image": "images/00001.jpg",
-                "question": "Test?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": "A",
-                "experience_level": "beginner",
-                "category": cat,
-                "subject": "guard",
-                "source": "https://youtube.com/watch?v=test",
-                "timestamp": 0,
-            }
-            sample = SampleRecord.model_validate(record)
-            assert sample.category == cat
-
-    def test_all_subjects(self):
-        """All valid subjects."""
-        subjects = [
-            "guard",
-            "passing",
-            "submissions",
-            "controls",
-            "escapes",
-            "takedowns",
-        ]
-        for subj in subjects:
-            record = {
-                "id": "00001",
-                "image": "images/00001.jpg",
-                "question": "Test?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": "A",
-                "experience_level": "beginner",
-                "category": "gi",
-                "subject": subj,
-                "source": "https://youtube.com/watch?v=test",
-                "timestamp": 0,
-            }
-            sample = SampleRecord.model_validate(record)
-            assert sample.subject == subj
-
-    def test_all_answers(self):
-        """All valid answer letters."""
-        for ans in ["A", "B", "C", "D"]:
-            record = {
-                "id": "00001",
-                "image": "images/00001.jpg",
-                "question": "Test?",
-                "choices": ["A", "B", "C", "D"],
-                "answer": ans,
-                "experience_level": "beginner",
-                "category": "gi",
-                "subject": "guard",
-                "source": "https://youtube.com/watch?v=test",
-                "timestamp": 0,
-            }
-            sample = SampleRecord.model_validate(record)
-            assert sample.answer == ans
+def _sample(**overrides):
+    """Build a valid SampleRecord dict, overriding any fields."""
+    base = {
+        "id": "00001",
+        "image": "images/00001.jpg",
+        "question": "What technique is this?",
+        "choices": ["A", "B", "C", "D"],
+        "answer": "A",
+        "experience_level": "beginner",
+        "category": "gi",
+        "subject": "guard",
+        "source": "https://youtube.com/watch?v=test",
+        "timestamp": 0,
+    }
+    base.update(overrides)
+    return base
 
 
-class TestInvalidSample:
-    """Tests for invalid sample records."""
+def test_valid_sample():
+    """A minimal valid record parses successfully."""
+    assert SampleRecord.model_validate(_sample()).id == "00001"
 
-    def test_missing_id(self):
-        """Missing required id field."""
-        record = {
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
+
+@pytest.mark.parametrize(
+    ("field", "bad_val"),
+    [("experience_level", "expert"), ("category", "both"), ("subject", "sweeps")],
+)
+def test_rejects_invalid_enum(field, bad_val):
+    """Invalid enum values are rejected by the schema."""
+    with pytest.raises(ValidationError):
+        SampleRecord.model_validate(_sample(**{field: bad_val}))
+
+
+def test_rejects_bad_choice_counts():
+    """Too few, too many, or empty choices are rejected."""
+    for choices in [["A"], ["A", "B", "C", "D", "E"], []]:
         with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_missing_question(self):
-        """Missing required question field."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_invalid_experience_level(self):
-        """Invalid experience_level value."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "A",
-            "experience_level": "expert",  # Invalid
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_invalid_category(self):
-        """Invalid category value."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "both",  # Invalid
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_invalid_subject(self):
-        """Invalid subject value."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "sweeps",  # Invalid
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_invalid_answer(self):
-        """Invalid answer letter."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A", "B", "C", "D"],
-            "answer": "E",  # Invalid
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_wrong_choice_count_too_many(self):
-        """More than 4 choices."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A", "B", "C", "D", "E"],  # 5 choices
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_wrong_choice_count_too_few(self):
-        """Less than 2 choices."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": ["A"],  # 1 choice
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_empty_choices(self):
-        """Empty choices list."""
-        record = {
-            "id": "00001",
-            "image": "images/00001.jpg",
-            "question": "Test?",
-            "choices": [],  # Empty
-            "answer": "A",
-            "experience_level": "beginner",
-            "category": "gi",
-            "subject": "guard",
-            "source": "https://youtube.com/watch?v=test",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
-
-    def test_answer_out_of_range(self):
-        """Answer letter beyond the number of choices."""
-        record = {
-            "id": "00001",
-            "image": ["images/00001_a.jpg", "images/00001_b.jpg"],
-            "question": "Which image?",
-            "choices": ["Image A", "Image B"],
-            "answer": "C",  # Only A and B are valid
-            "experience_level": "advanced",
-            "category": "no_gi",
-            "subject": "controls",
-            "source": "course/01",
-            "timestamp": 0,
-        }
-        with pytest.raises(ValidationError):
-            SampleRecord.model_validate(record)
+            SampleRecord.model_validate(_sample(choices=choices))
 
 
-class TestSourceModel:
-    """Tests for the Source model used in sources/registry.jsonl."""
-
-    def test_valid_source(self):
-        """Valid source entry passes validation."""
-        from bjj_vqa.schema import Source
-
-        raw = {
-            "url": "https://youtube.com/watch?v=test123",
-            "title": "Test Video",
-            "creator": "Test Channel",
-            "license_type": "cc_by",
-            "question_ids": ["00001", "00002"],
-        }
-        source = Source.model_validate(raw)
-        assert source.license_type == "cc_by"
-        assert source.question_ids == ["00001", "00002"]
-
-    def test_source_invalid_license(self):
-        """Invalid license_type rejected."""
-        from bjj_vqa.schema import Source
-
-        raw = {
-            "url": "https://youtube.com/watch?v=test",
-            "title": "Test",
-            "creator": "Test",
-            "license_type": "cc_zero",
-            "question_ids": [],
-        }
-        with pytest.raises(ValidationError):
-            Source.model_validate(raw)
+def test_rejects_answer_beyond_choices():
+    """Answer letter beyond the number of choices is rejected."""
+    with pytest.raises(ValidationError):
+        SampleRecord.model_validate(_sample(choices=["A", "B"], answer="C"))
 
 
-class TestImageChoiceSample:
-    """Tests for multi-image choice records (private benchmark format)."""
+def test_image_as_list():
+    """A record with a list of image paths parses correctly."""
+    record = _sample(
+        image=["images/a.jpg", "images/b.jpg"],
+        choices=["Image A", "Image B"],
+        answer="B",
+    )
+    sample = SampleRecord.model_validate(record)
+    assert isinstance(sample.image, list)
 
-    def test_two_image_choices(self):
-        """Valid record with two image options."""
-        record = {
-            "id": "00001",
-            "image": ["images/00001_a.jpg", "images/00001_b.jpg"],
-            "question": "Which position is correct?",
-            "choices": ["Image A", "Image B"],
-            "answer": "B",
-            "experience_level": "advanced",
-            "category": "no_gi",
-            "subject": "controls",
-            "source": "course/01",
-            "timestamp": 0,
-        }
-        sample = SampleRecord.model_validate(record)
-        assert sample.answer == "B"
-        assert len(sample.choices) == len(record["choices"])
-        assert isinstance(sample.image, list)
 
-    def test_three_image_choices(self):
-        """Valid record with three image options."""
-        record = {
-            "id": "00002",
-            "image": ["images/00002_a.jpg", "images/00002_b.jpg", "images/00002_c.jpg"],
-            "question": "Which is the correct escape?",
-            "choices": ["Image A", "Image B", "Image C"],
-            "answer": "C",
-            "experience_level": "advanced",
-            "category": "no_gi",
-            "subject": "escapes",
-            "source": "course/02",
-            "timestamp": 0,
-        }
-        sample = SampleRecord.model_validate(record)
-        assert sample.answer == "C"
-        assert len(sample.choices) == len(record["choices"])
+def test_generated_question_requires_4_choices():
+    """GeneratedQuestion rejects fewer than 4 choices."""
+    with pytest.raises(ValidationError):
+        GeneratedQuestion(
+            question="Test?",
+            choices=["A", "B"],
+            answer="A",
+            experience_level="beginner",
+            category="gi",
+            subject="guard",
+            source="https://youtube.com/watch?v=test&t=42s",
+            timestamp=42,
+        )

@@ -63,22 +63,18 @@ select = ["ALL"]
 "tests/**/*.py" = [
     "ANN",    # type annotations not required in tests
     "S101",   # assert-used
+    "D100",   # missing docstring in public module
+    "D101",   # missing docstring in public class
     "D102",   # missing docstring in public method
+    "D103",   # missing docstring in public function
     "D401",   # docstring imperative mood - fixtures describe what they return
     "PLR2004",# magic value comparison - acceptable in test assertions
-    "PLC0415",# import not at top level - needed for post-env-var imports
+    "ARG001", # unused function argument - pytest fixture args
     "ARG002", # unused method argument - pytest fixtures and @patch args
 ]
 "src/bjj_vqa/cli.py" = [
     "T201",   # print-used - CLI uses print for output
-    "TC001",  # SampleRecord used at runtime (model_validate calls)
-    "PLC0415", # lazy import to avoid yt-dlp dep for validate/publish
-]
-"src/bjj_vqa/generate/__init__.py" = [
-    "S101",   # assert-used - validation checks
-    "S603",   # subprocess call - youtube URL is user-provided
-    "S607",   # partial executable path - yt-dlp and ffmpeg
-    "T201",   # print-used - error messages
+    "PLC0415",# lazy import to avoid yt-dlp dep for validate/publish
 ]
 "scripts/**/*.py" = [
     "INP001", # implicit namespace package - scripts are standalone

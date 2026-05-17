@@ -25,7 +25,7 @@ Each question object has these fields:
 | `category` | string | "gi" or "no_gi" |
 | `subject` | string | One of: guard, passing, submissions, controls, escapes, takedowns |
 | `source` | string | YouTube URL with timestamp (e.g. `https://youtube.com/watch?v=ABC&t=42s`) |
-| `timestamp_seconds` | integer | The timestamp in seconds for frame extraction |
+| `timestamp` | integer | The timestamp in seconds for frame extraction |
 
 Generate 3 to 8 questions based on the video content.
 

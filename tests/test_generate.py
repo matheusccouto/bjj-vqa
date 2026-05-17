@@ -1,111 +1,93 @@
-"""Integration tests for the generate CLI.
+"""Integration tests for the generate pipeline.
 
-These tests use the real OpenRouter API and are marked with
-@pytest.mark.integration. They skip automatically when
-OPENROUTER_API_KEY is not set.
-
-Run explicitly: uv run pytest tests/test_generate.py -v -m integration
+Requires OPENROUTER_API_KEY. Calls real external services.
+Run: uv run pytest tests/test_generate.py -v -m integration
 """
 
 import json
 import os
-from pathlib import Path
 
 import pytest
 
+from bjj_vqa.cli import validate
+from bjj_vqa.generate import GeneratedQuestion, generate_questions, run
+
+from .helpers import VALID_SAMPLE, YOUTUBE_URL
+
 pytestmark = pytest.mark.integration
 
-
-@pytest.fixture
-def temp_data_dir(tmp_path: Path) -> Path:
-    """Create temporary data directory with empty samples.json."""
-    data_dir = tmp_path / "data"
-    data_dir.mkdir()
-    images_dir = data_dir / "images"
-    images_dir.mkdir()
-    (data_dir / "samples.json").write_text("[]")
-    return data_dir
-
-
-@pytest.mark.skipif(
-    not os.getenv("OPENROUTER_API_KEY"),
-    reason="requires OPENROUTER_API_KEY",
+skip_no_key = pytest.mark.skipif(
+    os.environ.get("OPENROUTER_API_KEY") is None,
+    reason="OPENROUTER_API_KEY not set",
 )
-def test_generate_appends_valid_records(temp_data_dir: Path) -> None:
-    """Generate appends valid records to samples.json."""
-    import os as _os
-
-    _os.environ["BJJ_VQA_DATA_DIR"] = str(temp_data_dir)
-
-    try:
-        from bjj_vqa.generate import run
-
-        # Use a short CC-licensed video
-        url = "https://www.youtube.com/watch?v=SzL_uObk8fk"
-        records = run(url)
-
-        assert len(records) >= 1, "Expected at least 1 generated question"
-
-        # Verify records were appended
-        samples = json.loads((temp_data_dir / "samples.json").read_text())
-        assert len(samples) >= 1
-
-        # Verify each record is valid
-        from bjj_vqa.schema import SampleRecord
-
-        for s in samples:
-            SampleRecord.model_validate(s)
-    finally:
-        _os.environ.pop("BJJ_VQA_DATA_DIR", None)
 
 
-@pytest.mark.skipif(
-    not os.getenv("OPENROUTER_API_KEY"),
-    reason="requires OPENROUTER_API_KEY",
-)
-def test_generate_creates_images(temp_data_dir: Path) -> None:
-    """Generate creates image files in data/images/."""
-    import os as _os
+@skip_no_key
+def test_generate_questions_returns_valid_output():
+    """Gemini returns valid GeneratedQuestion objects from a YouTube URL."""
+    questions = generate_questions(YOUTUBE_URL)
 
-    _os.environ["BJJ_VQA_DATA_DIR"] = str(temp_data_dir)
-
-    try:
-        from bjj_vqa.generate import run
-
-        url = "https://www.youtube.com/watch?v=SzL_uObk8fk"
-        run(url)
-
-        images_dir = temp_data_dir / "images"
-        image_files = list(images_dir.glob("*.jpg"))
-        assert len(image_files) >= 1, "Expected at least 1 image file"
-
-        # Verify image names are short UUID hex
-        for img in image_files:
-            name = img.stem
-            assert len(name) == 8, f"Expected 8-char hex name, got {name}"
-            int(name, 16)  # verify it's valid hex
-    finally:
-        _os.environ.pop("BJJ_VQA_DATA_DIR", None)
+    assert 3 <= len(questions) <= 8
+    for q in questions:
+        assert isinstance(q, GeneratedQuestion)
+        assert len(q.question) > 10
+        assert len(q.choices) == 4
+        assert q.answer in ("A", "B", "C", "D")
+        assert q.experience_level in ("beginner", "intermediate", "advanced")
+        assert q.category in ("gi", "no_gi")
+        assert q.subject in (
+            "guard",
+            "passing",
+            "submissions",
+            "controls",
+            "escapes",
+            "takedowns",
+        )
+        assert q.timestamp > 0
 
 
-@pytest.mark.skipif(
-    not os.getenv("OPENROUTER_API_KEY"),
-    reason="requires OPENROUTER_API_KEY",
-)
-def test_validate_passes_after_generate(temp_data_dir: Path) -> None:
-    """bjj-vqa validate passes after generate."""
-    import os as _os
+@skip_no_key
+def test_run_creates_records_and_images(gen_env):
+    """The full pipeline creates records, images, samples.json, and registry."""
+    records = run(YOUTUBE_URL, data_dir=gen_env)
 
-    _os.environ["BJJ_VQA_DATA_DIR"] = str(temp_data_dir)
+    assert len(records) >= 3
+    for r in records:
+        assert (gen_env / r.image).exists()
+        assert (gen_env / r.image).stat().st_size > 0
 
-    try:
-        from bjj_vqa.generate import run
+    samples = json.loads((gen_env / "samples.json").read_text())
+    assert len(samples) == len(records)
 
-        url = "https://www.youtube.com/watch?v=SzL_uObk8fk"
-        run(url)
+    source_entry = json.loads(
+        (gen_env.parent / "sources" / "registry.jsonl").read_text().strip(),
+    )
+    assert source_entry["url"] == YOUTUBE_URL
+    assert source_entry["license_type"] in ("cc_by", "cc_by_sa", "permissioned")
+    assert len(source_entry["question_ids"]) == len(records)
 
-        from bjj_vqa.cli import validate
 
-        validate()  # Should not raise
-    finally:
-        _os.environ.pop("BJJ_VQA_DATA_DIR", None)
+@skip_no_key
+def test_run_appends_to_existing_samples(gen_env):
+    """run() appends to existing samples.json without overwriting."""
+    existing = [
+        {
+            **VALID_SAMPLE,
+            "source": "https://youtube.com/watch?v=existing",
+            "timestamp": 10,
+        },
+    ]
+    (gen_env / "samples.json").write_text(json.dumps(existing, indent=2))
+
+    records = run(YOUTUBE_URL, data_dir=gen_env)
+
+    samples = json.loads((gen_env / "samples.json").read_text())
+    assert len(samples) == 1 + len(records)
+    assert samples[0]["id"] == "00001"
+
+
+@skip_no_key
+def test_run_output_passes_validate(gen_env):
+    """Generated data passes bjj-vqa validate end-to-end."""
+    run(YOUTUBE_URL, data_dir=gen_env)
+    validate(data_dir=gen_env)

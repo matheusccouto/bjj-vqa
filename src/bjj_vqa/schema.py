@@ -7,10 +7,17 @@ from typing import Literal
 from pydantic import BaseModel, Field, model_validator
 
 
-def get_data_dir() -> Path:
-    """Get data directory from env var or default."""
+def get_data_dir(path: Path | None = None) -> Path:
+    """Return path if given, else BJJ_VQA_DATA_DIR env var, else default."""
+    if path is not None:
+        return path
     default_path = Path(__file__).parent.parent.parent / "data"
     return Path(os.environ.get("BJJ_VQA_DATA_DIR", default_path))
+
+
+def get_sources_dir(data_dir: Path | None = None) -> Path:
+    """Get sources directory (sibling of data dir)."""
+    return get_data_dir(data_dir).parent / "sources"
 
 
 DATA_DIR = get_data_dir()
