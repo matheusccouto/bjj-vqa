@@ -59,7 +59,7 @@ works. Evaluation results are stored in `.eval_results/` in the **model's** repo
 
 ```bash
 # Install dependencies
-uv sync --extras spaces
+uv sync --extra spaces
 
 # Launch the Gradio app locally
 uv run src/app/app.py
