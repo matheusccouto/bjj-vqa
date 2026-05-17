@@ -54,6 +54,7 @@ class TestValidate:
                 "category": "gi",
                 "subject": "guard",
                 "source": "https://youtube.com/watch?v=test&t=60s",
+                "timestamp": 60,
             },
         ]
         write_samples(temp_data_env, valid_samples)
@@ -76,6 +77,7 @@ class TestValidate:
                 "category": "gi",
                 "subject": "invalid_subject",
                 "source": "https://youtube.com/watch?v=test",
+                "timestamp": 0,
             },
         ]
         write_samples(temp_data_env, invalid_samples)
@@ -99,6 +101,7 @@ class TestValidate:
                 "category": "gi",
                 "subject": "guard",
                 "source": "https://youtube.com/watch?v=test",
+                "timestamp": 0,
             },
         ]
         write_samples(temp_data_env, samples)
@@ -135,6 +138,7 @@ class TestValidate:
                 "category": "gi",
                 "subject": "guard",
                 "source": "https://youtube.com/watch?v=test&t=60s",
+                "timestamp": 60,
             },
             {
                 "id": "00002",
@@ -146,6 +150,7 @@ class TestValidate:
                 "category": "no_gi",
                 "subject": "submissions",
                 "source": "https://youtube.com/watch?v=test&t=120s",
+                "timestamp": 120,
             },
         ]
         write_samples(temp_data_env, samples)

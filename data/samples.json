@@ -13,7 +13,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=70s"
+    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=70s",
+    "timestamp": 70
   },
   {
     "id": "00002",
@@ -29,7 +30,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=90s"
+    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=90s",
+    "timestamp": 90
   },
   {
     "id": "00003",
@@ -45,7 +47,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=158s"
+    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=158s",
+    "timestamp": 158
   },
   {
     "id": "00004",
@@ -61,7 +64,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=218s"
+    "source": "https://www.youtube.com/watch?v=SzL_uObk8fk&t=218s",
+    "timestamp": 218
   },
   {
     "id": "00005",
@@ -77,7 +81,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=61s"
+    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=61s",
+    "timestamp": 61
   },
   {
     "id": "00006",
@@ -93,7 +98,8 @@
     "experience_level": "advanced",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=271s"
+    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=271s",
+    "timestamp": 271
   },
   {
     "id": "00007",
@@ -109,7 +115,8 @@
     "experience_level": "advanced",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=296s"
+    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=296s",
+    "timestamp": 296
   },
   {
     "id": "00008",
@@ -125,7 +132,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=315s"
+    "source": "https://www.youtube.com/watch?v=66avj78ctR8&t=315s",
+    "timestamp": 315
   },
   {
     "id": "00009",
@@ -141,7 +149,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=94s"
+    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=94s",
+    "timestamp": 94
   },
   {
     "id": "00010",
@@ -157,7 +166,8 @@
     "experience_level": "advanced",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=147s"
+    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=147s",
+    "timestamp": 147
   },
   {
     "id": "00011",
@@ -173,7 +183,8 @@
     "experience_level": "advanced",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=190s"
+    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=190s",
+    "timestamp": 190
   },
   {
     "id": "00012",
@@ -189,7 +200,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=221s"
+    "source": "https://www.youtube.com/watch?v=aL8RfesQL5k&t=221s",
+    "timestamp": 221
   },
   {
     "id": "00013",
@@ -205,7 +217,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=45s"
+    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=45s",
+    "timestamp": 45
   },
   {
     "id": "00014",
@@ -221,7 +234,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=85s"
+    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=85s",
+    "timestamp": 85
   },
   {
     "id": "00015",
@@ -237,7 +251,8 @@
     "experience_level": "advanced",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=130s"
+    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=130s",
+    "timestamp": 130
   },
   {
     "id": "00016",
@@ -253,7 +268,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=185s"
+    "source": "https://www.youtube.com/watch?v=9pt9nMWSeeQ&t=185s",
+    "timestamp": 185
   },
   {
     "id": "00017",
@@ -269,7 +285,8 @@
     "experience_level": "beginner",
     "category": "no_gi",
     "subject": "takedowns",
-    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=115s"
+    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=115s",
+    "timestamp": 115
   },
   {
     "id": "00018",
@@ -285,7 +302,8 @@
     "experience_level": "intermediate",
     "category": "no_gi",
     "subject": "takedowns",
-    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=235s"
+    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=235s",
+    "timestamp": 235
   },
   {
     "id": "00019",
@@ -301,7 +319,8 @@
     "experience_level": "intermediate",
     "category": "no_gi",
     "subject": "takedowns",
-    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=368s"
+    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=368s",
+    "timestamp": 368
   },
   {
     "id": "00020",
@@ -317,7 +336,8 @@
     "experience_level": "intermediate",
     "category": "no_gi",
     "subject": "takedowns",
-    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=374s"
+    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=374s",
+    "timestamp": 374
   },
   {
     "id": "00021",
@@ -333,7 +353,8 @@
     "experience_level": "beginner",
     "category": "no_gi",
     "subject": "takedowns",
-    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=511s"
+    "source": "https://www.youtube.com/watch?v=isOH_Dipwnk&t=511s",
+    "timestamp": 511
   },
   {
     "id": "00022",
@@ -349,7 +370,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=51s"
+    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=51s",
+    "timestamp": 51
   },
   {
     "id": "00023",
@@ -365,7 +387,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=104s"
+    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=104s",
+    "timestamp": 104
   },
   {
     "id": "00024",
@@ -381,7 +404,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=143s"
+    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=143s",
+    "timestamp": 143
   },
   {
     "id": "00025",
@@ -397,7 +421,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=163s"
+    "source": "https://www.youtube.com/watch?v=cYXPvpmAmdk&t=163s",
+    "timestamp": 163
   },
   {
     "id": "00026",
@@ -413,7 +438,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=151s"
+    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=151s",
+    "timestamp": 151
   },
   {
     "id": "00027",
@@ -429,7 +455,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=242s"
+    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=242s",
+    "timestamp": 242
   },
   {
     "id": "00028",
@@ -445,7 +472,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=138s"
+    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=138s",
+    "timestamp": 138
   },
   {
     "id": "00029",
@@ -461,7 +489,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=232s"
+    "source": "https://www.youtube.com/watch?v=wU3qK1BlL_Y&t=232s",
+    "timestamp": 232
   },
   {
     "id": "00030",
@@ -477,7 +506,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=50s"
+    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=50s",
+    "timestamp": 50
   },
   {
     "id": "00031",
@@ -493,7 +523,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=136s"
+    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=136s",
+    "timestamp": 136
   },
   {
     "id": "00032",
@@ -509,7 +540,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=146s"
+    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=146s",
+    "timestamp": 146
   },
   {
     "id": "00033",
@@ -525,7 +557,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=107s"
+    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=107s",
+    "timestamp": 107
   },
   {
     "id": "00034",
@@ -541,7 +574,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=306s"
+    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=306s",
+    "timestamp": 306
   },
   {
     "id": "00035",
@@ -557,7 +591,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=358s"
+    "source": "https://www.youtube.com/watch?v=DDtR7gEI3hc&t=358s",
+    "timestamp": 358
   },
   {
     "id": "00036",
@@ -573,7 +608,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=75s"
+    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=75s",
+    "timestamp": 75
   },
   {
     "id": "00037",
@@ -589,7 +625,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=81s"
+    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=81s",
+    "timestamp": 81
   },
   {
     "id": "00038",
@@ -605,7 +642,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=84s"
+    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=84s",
+    "timestamp": 84
   },
   {
     "id": "00039",
@@ -621,7 +659,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=90s"
+    "source": "https://www.youtube.com/watch?v=b4Khpj4Hxg0&t=90s",
+    "timestamp": 90
   },
   {
     "id": "00040",
@@ -637,7 +676,8 @@
     "experience_level": "intermediate",
     "category": "no_gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=40s"
+    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=40s",
+    "timestamp": 40
   },
   {
     "id": "00041",
@@ -653,7 +693,8 @@
     "experience_level": "beginner",
     "category": "no_gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=86s"
+    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=86s",
+    "timestamp": 86
   },
   {
     "id": "00042",
@@ -669,7 +710,8 @@
     "experience_level": "intermediate",
     "category": "no_gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=145s"
+    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=145s",
+    "timestamp": 145
   },
   {
     "id": "00043",
@@ -685,7 +727,8 @@
     "experience_level": "advanced",
     "category": "no_gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=260s"
+    "source": "https://www.youtube.com/watch?v=7fEGY0YnlQs&t=260s",
+    "timestamp": 260
   },
   {
     "id": "00044",
@@ -701,7 +744,8 @@
     "experience_level": "beginner",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=23s"
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=23s",
+    "timestamp": 23
   },
   {
     "id": "00045",
@@ -717,7 +761,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "guard",
-    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=37s"
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=37s",
+    "timestamp": 37
   },
   {
     "id": "00046",
@@ -733,7 +778,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "passing",
-    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=55s"
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=55s",
+    "timestamp": 55
   },
   {
     "id": "00047",
@@ -749,7 +795,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "passing",
-    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=72s"
+    "source": "https://www.youtube.com/watch?v=AybfgO8HO6o&t=72s",
+    "timestamp": 72
   },
   {
     "id": "00048",
@@ -765,7 +812,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=255s"
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=255s",
+    "timestamp": 255
   },
   {
     "id": "00049",
@@ -781,7 +829,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=228s"
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=228s",
+    "timestamp": 228
   },
   {
     "id": "00050",
@@ -797,7 +846,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=242s"
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=242s",
+    "timestamp": 242
   },
   {
     "id": "00051",
@@ -813,7 +863,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=295s"
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=295s",
+    "timestamp": 295
   },
   {
     "id": "00052",
@@ -829,7 +880,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "submissions",
-    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=275s"
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=275s",
+    "timestamp": 275
   },
   {
     "id": "00053",
@@ -845,7 +897,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=221s"
+    "source": "https://www.youtube.com/watch?v=L9Pl-4-fhvw&t=221s",
+    "timestamp": 221
   },
   {
     "id": "00054",
@@ -861,7 +914,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "passing",
-    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=147s"
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=147s",
+    "timestamp": 147
   },
   {
     "id": "00055",
@@ -877,7 +931,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "escapes",
-    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=223s"
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=223s",
+    "timestamp": 223
   },
   {
     "id": "00056",
@@ -893,7 +948,8 @@
     "experience_level": "intermediate",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=287s"
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=287s",
+    "timestamp": 287
   },
   {
     "id": "00057",
@@ -909,6 +965,7 @@
     "experience_level": "advanced",
     "category": "gi",
     "subject": "controls",
-    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=503s"
+    "source": "https://www.youtube.com/watch?v=-oE5O-a6hMI&t=503s",
+    "timestamp": 503
   }
 ]

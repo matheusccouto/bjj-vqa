@@ -21,6 +21,7 @@ class TestValidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test&t=60s",
+            "timestamp": 60,
         }
         sample = SampleRecord.model_validate(record)
         assert sample.id == "00001"
@@ -39,6 +40,7 @@ class TestValidSample:
                 "category": "gi",
                 "subject": "guard",
                 "source": "https://youtube.com/watch?v=test",
+                "timestamp": 0,
             }
             sample = SampleRecord.model_validate(record)
             assert sample.experience_level == level
@@ -56,6 +58,7 @@ class TestValidSample:
                 "category": cat,
                 "subject": "guard",
                 "source": "https://youtube.com/watch?v=test",
+                "timestamp": 0,
             }
             sample = SampleRecord.model_validate(record)
             assert sample.category == cat
@@ -81,6 +84,7 @@ class TestValidSample:
                 "category": "gi",
                 "subject": subj,
                 "source": "https://youtube.com/watch?v=test",
+                "timestamp": 0,
             }
             sample = SampleRecord.model_validate(record)
             assert sample.subject == subj
@@ -98,6 +102,7 @@ class TestValidSample:
                 "category": "gi",
                 "subject": "guard",
                 "source": "https://youtube.com/watch?v=test",
+                "timestamp": 0,
             }
             sample = SampleRecord.model_validate(record)
             assert sample.answer == ans
@@ -117,6 +122,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -132,6 +138,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -148,6 +155,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -164,6 +172,7 @@ class TestInvalidSample:
             "category": "both",  # Invalid
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -180,6 +189,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "sweeps",  # Invalid
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -196,6 +206,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -212,6 +223,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -228,6 +240,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -244,6 +257,7 @@ class TestInvalidSample:
             "category": "gi",
             "subject": "guard",
             "source": "https://youtube.com/watch?v=test",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -260,6 +274,7 @@ class TestInvalidSample:
             "category": "no_gi",
             "subject": "controls",
             "source": "course/01",
+            "timestamp": 0,
         }
         with pytest.raises(ValidationError):
             SampleRecord.model_validate(record)
@@ -313,6 +328,7 @@ class TestImageChoiceSample:
             "category": "no_gi",
             "subject": "controls",
             "source": "course/01",
+            "timestamp": 0,
         }
         sample = SampleRecord.model_validate(record)
         assert sample.answer == "B"
@@ -331,6 +347,7 @@ class TestImageChoiceSample:
             "category": "no_gi",
             "subject": "escapes",
             "source": "course/02",
+            "timestamp": 0,
         }
         sample = SampleRecord.model_validate(record)
         assert sample.answer == "C"
