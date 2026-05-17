@@ -22,20 +22,27 @@ dependencies = [
     "pydantic>=2.0.0",
 ]
 
+[project.optional-dependencies]
+spaces = ["gradio>=1.0.0"]
+
 [project.scripts]
 bjj-vqa = "bjj_vqa.cli:main"
 
 [dependency-groups]
 dev = [
     {include-group = "test"},
-    {include-group = "lint"},
+    {include-group = "quality"},
+    {include-group = "tools"},
 ]
 test = [
     "pytest>=8.0.0",
 ]
-lint = [
+quality = [
     "ruff>=0.9.0",
     "ty>=0.0.1",
+]
+tools = [
+    "playwright>=1.59.0",
 ]
 
 [build-system]
