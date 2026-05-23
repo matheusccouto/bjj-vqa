@@ -1,0 +1,27 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    paths:
+      - "data/samples.json"
+      - "evals/**"
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version-file: ".python-version"
+
+      - name: Install dependencies
+        run: uv sync --group evals
+
+      - name: Run DeepEval quality gate
+        run: uv run deepeval test run evals/ -m evals
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

@@ -47,6 +47,9 @@ quality = [
 tools = [
     "playwright>=1.59.0",
 ]
+evals = [
+    "deepeval>=4.0.3",
+]
 
 [build-system]
 requires = ["uv_build>=0.11.3,<0.12"]
@@ -85,6 +88,7 @@ select = ["ALL"]
 [tool.pytest.ini_options]
 markers = [
     "integration: requires a live model API key; run with -m integration",
+    "evals: DeepEval quality gate tests; run with -m evals",
 ]
 
 [tool.ty.environment]
@@ -92,4 +96,4 @@ python = ".venv"
 root = ["./src"]
 
 [tool.ty.src]
-include = ["src", "tests"]
+include = ["src", "tests", "evals"]

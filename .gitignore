@@ -120,6 +120,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# DeepEval
+.deepeval/
+
 # Eval results (go to model repos on HF)
 .eval_results/
 
