@@ -15,10 +15,6 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    outputs:
-      count: ${{ steps.generate_step.outputs.count }}
-      has_changes: ${{ steps.commit_step.outputs.has_changes }}
-      balance_warning: ${{ steps.balance_step.outputs.warning }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,20 +25,19 @@ jobs:
       - run: uv sync --locked
 
       - name: Generate questions
-        id: generate_step
+        id: generate
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
-          OUTPUT=$(uv run bjj-vqa generate "${{ inputs.url }}" 2>&1)
-          echo "$OUTPUT"
-          COUNT=$(echo "$OUTPUT" | grep -oP 'Generated \K[0-9]+')
-          echo "count=${COUNT:-0}" >> $GITHUB_OUTPUT
+          uv run bjj-vqa generate "${{ inputs.url }}"
 
-      - name: Configure git and commit
-        id: commit_step
+      - name: Configure git
         run: |
           git config user.name "bjj-vqa-bot"
           git config user.email "bjj-vqa-bot@users.noreply.github.com"
+
+      - name: Commit data changes
+        run: |
           git add data/
           if git diff --cached --quiet; then
             echo "No changes to commit"
@@ -52,31 +47,15 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check balance
-        id: balance_step
-        if: steps.commit_step.outputs.has_changes == 'true'
-        run: echo "warning=$(uv run python scripts/balance_check.py)" >> $GITHUB_OUTPUT
-
       - name: Push and open PR
-        if: steps.commit_step.outputs.has_changes == 'true'
+        if: steps.commit.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="generate/$(date +%Y%m%d)-${{ github.run_id }}"
           git checkout -b "$BRANCH"
           git push origin "$BRANCH"
-
-          DESCRIPTION="Generated **${{ steps.generate_step.outputs.count }}** questions from video."
-          DESCRIPTION+=$'\n\n'
-
-          if [ -n "${{ steps.balance_step.outputs.warning }}" ]; then
-            DESCRIPTION+="⚠️ **Balance Warning:** ${{ steps.balance_step.outputs.warning }}"
-            DESCRIPTION+=$'\n\n'
-          fi
-
-          DESCRIPTION+="Triggered by [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
-
           gh pr create \
             --base main \
-            --title "Add generated questions (${{ steps.generate_step.outputs.count }})" \
-            --body "$DESCRIPTION"
+            --title "Add generated questions" \
+            --body "Generated questions from video.\n\nTriggered by [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
