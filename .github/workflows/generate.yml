@@ -1,0 +1,82 @@
+name: Generate Questions
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "YouTube URL of the BJJ instructional video"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    outputs:
+      count: ${{ steps.generate_step.outputs.count }}
+      has_changes: ${{ steps.commit_step.outputs.has_changes }}
+      balance_warning: ${{ steps.balance_step.outputs.warning }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - run: uv sync --locked
+
+      - name: Generate questions
+        id: generate_step
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          OUTPUT=$(uv run bjj-vqa generate "${{ inputs.url }}" 2>&1)
+          echo "$OUTPUT"
+          COUNT=$(echo "$OUTPUT" | grep -oP 'Generated \K[0-9]+')
+          echo "count=${COUNT:-0}" >> $GITHUB_OUTPUT
+
+      - name: Configure git and commit
+        id: commit_step
+        run: |
+          git config user.name "bjj-vqa-bot"
+          git config user.email "bjj-vqa-bot@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "add generated questions from video"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check balance
+        id: balance_step
+        if: steps.commit_step.outputs.has_changes == 'true'
+        run: echo "warning=$(uv run python scripts/balance_check.py)" >> $GITHUB_OUTPUT
+
+      - name: Push and open PR
+        if: steps.commit_step.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="generate/$(date +%Y%m%d)-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git push origin "$BRANCH"
+
+          DESCRIPTION="Generated **${{ steps.generate_step.outputs.count }}** questions from video."
+          DESCRIPTION+=$'\n\n'
+
+          if [ -n "${{ steps.balance_step.outputs.warning }}" ]; then
+            DESCRIPTION+="⚠️ **Balance Warning:** ${{ steps.balance_step.outputs.warning }}"
+            DESCRIPTION+=$'\n\n'
+          fi
+
+          DESCRIPTION+="Triggered by [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+
+          gh pr create \
+            --base main \
+            --title "Add generated questions (${{ steps.generate_step.outputs.count }})" \
+            --body "$DESCRIPTION"
