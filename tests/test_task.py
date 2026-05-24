@@ -24,6 +24,7 @@ def test_record_to_sample():
     assert sample.target == "B"
     assert sample.choices == ["Option A", "Option B", "Option C", "Option D"]
     metadata = sample.metadata
+    assert metadata is not None
     assert metadata["experience_level"] == "beginner"
     assert metadata["category"] == "gi"
     assert metadata["subject"] == "guard"
