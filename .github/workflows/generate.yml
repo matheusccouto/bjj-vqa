@@ -1,0 +1,61 @@
+name: Generate Questions
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "YouTube URL of the BJJ instructional video"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - run: uv sync --locked
+
+      - name: Generate questions
+        id: generate
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          uv run bjj-vqa generate "${{ inputs.url }}"
+
+      - name: Configure git
+        run: |
+          git config user.name "bjj-vqa-bot"
+          git config user.email "bjj-vqa-bot@users.noreply.github.com"
+
+      - name: Commit data changes
+        run: |
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "add generated questions from video"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push and open PR
+        if: steps.commit.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="generate/$(date +%Y%m%d)-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --title "Add generated questions" \
+            --body "Generated questions from video.\n\nTriggered by [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
