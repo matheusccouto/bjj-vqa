@@ -1,0 +1,66 @@
+name: Generate Questions
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'YouTube URL of the BJJ instructional video'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - run: uv sync --locked
+
+      - name: Generate questions from YouTube URL
+        id: generate
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: uv run bjj-vqa generate "${{ inputs.url }}"
+
+      - name: Check for changes in data/ or sources/
+        id: check_changes
+        run: |
+          git diff --quiet -- data/ sources/ && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Compute balance and PR description
+        id: pr_info
+        if: steps.check_changes.outputs.changed == 'true'
+        run: uv run python scripts/balance_check.py
+
+      - name: Create pull request
+        if: steps.check_changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Determine new branch name
+          BRANCH="clawdinho/generated-$(date +%s)"
+          git config user.name "clawdinhobot"
+          git config user.email "clawdinhobot@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add data/
+          git add sources/registry.jsonl
+          git commit -m "Add generated questions from video"
+          git push origin "$BRANCH"
+
+          PR_BODY=$(cat /tmp/pr_body.txt)
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Add generated questions from workflow" \
+            --body "$PR_BODY" \
+            --reviewer matheusccouto
