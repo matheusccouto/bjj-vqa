@@ -1,0 +1,33 @@
+name: Generate Questions
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked
+      - run: uv run bjj-vqa generate "${{ inputs.url }}"
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      - run: |
+          git config user.name clawdinhobot
+          git config user.email clawdinhobot@users.noreply.github.com
+          git checkout -b clawdinho/generated-${{ github.run_id }}
+          git add -A
+          git commit -m "Add generated questions"
+          git push origin clawdinho/generated-${{ github.run_id }}
+          gh pr create --base main --head clawdinho/generated-${{ github.run_id }} --fill
+        env:
+          GH_TOKEN: ${{ github.token }}
