@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: 'YouTube URL of the BJJ instructional video'
         required: true
         type: string
 
@@ -17,34 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
-
       - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-
       - run: uv sync --locked
-
-      - name: Generate questions from YouTube URL
+      - run: uv run bjj-vqa generate "${{ inputs.url }}"
         env:
-          OPENROUTER_API_KEY: *** secrets.OPENROUTER_API_KEY }}
-        run: uv run bjj-vqa generate "${{ inputs.url }}"
-
-      - name: Create pull request
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      - run: |
+          git config user.name clawdinhobot
+          git config user.email clawdinhobot@users.noreply.github.com
+          git checkout -b clawdinho/generated-${{ github.run_id }}
+          git add -A
+          git commit -m "Add generated questions"
+          git push origin clawdinho/generated-${{ github.run_id }}
+          gh pr create --base main --head clawdinho/generated-${{ github.run_id }} --fill
         env:
-          GH_TOKEN: *** github.token }}
-        run: |
-          BRANCH="clawdinho/generated-$(date +%s)"
-          git config user.name "clawdinhobot"
-          git config user.email "clawdinhobot@users.noreply.github.com"
-          git checkout -b "$BRANCH"
-          git add data/ sources/
-          git commit -m "Add generated questions from workflow"
-          git push origin "$BRANCH"
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "Add generated questions from workflow" \
-            --body "Automatically generated questions from \`${{ inputs.url }}\`." \
-            --reviewer matheusccouto
+          GH_TOKEN: ${{ github.token }}
